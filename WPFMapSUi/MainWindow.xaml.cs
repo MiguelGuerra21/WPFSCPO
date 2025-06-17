@@ -71,7 +71,7 @@ namespace WPFMapSUi
         #region Initialize Map Control Events
         private void InitializeMapControlEvents()
         {
-            MapControl.MouseLeftButtonDown += MapControl_MouseLeftButtonDown;
+            MapControl.MouseLeftButtonDown += MapControl_MouseLeftButtonDown2;
             MapControl.MouseMove += MapControl_MouseMove;
             MapControl.MouseLeftButtonUp += MapControl_MouseLeftButtonUp;
             MapControl.KeyDown += MapControl_KeyDown;
@@ -102,11 +102,56 @@ namespace WPFMapSUi
             }
         }
 
+        private void MapControl_MouseLeftButtonDown2(object sender, MouseButtonEventArgs e)
+        {
+            if (!_isControlPressed) return;
+
+            var position = e.GetPosition(MapControl);
+            var screenPosition = new MPoint(position.X, position.Y);
+
+            // Get map info at clicked position with a reasonable tolerance
+            int toleranceInPixels = 10; // Adjust this value as needed
+            var mapInfo = MapControl.GetMapInfo(screenPosition, toleranceInPixels);
+
+            if (mapInfo?.Feature == null)
+            {
+                Debug.WriteLine("No feature found at click position");
+                return;
+            }
+
+            // Check if feature is already selected
+            var existingFeature = _selectionState.Features.FirstOrDefault(f =>
+                FeaturesAreEqual(f, mapInfo.Feature));
+
+            if (existingFeature != null)
+            {
+                _selectionState.Features.Remove(existingFeature);
+                Debug.WriteLine("Feature deselected");
+            }
+            else
+            {
+                _selectionState.Features.Add(mapInfo.Feature);
+                Debug.WriteLine("Feature selected");
+            }
+
+            UpdateFeatureStyles();
+            e.Handled = true;
+        }
+
+        private bool FeaturesAreEqual(IFeature feature1, IFeature feature2)
+        {
+            if (feature1 is GeometryFeature gf1 && feature2 is GeometryFeature gf2)
+            {
+                return gf1.Geometry.EqualsExact(gf2.Geometry);
+            }
+            return false;
+        }
+
+
         private void MapControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!_isControlPressed)
             {
-                // Let the map handle navigation
                 e.Handled = false;
                 return;
             }
@@ -125,7 +170,7 @@ namespace WPFMapSUi
             // For single click selection
             if (e.ClickCount == 1)
             {
-                SelectSingleFeature(worldPosition);
+                SelectSingleFeature2(worldPosition);
             }
             else // For box selection
             {
@@ -264,11 +309,52 @@ namespace WPFMapSUi
             UpdateFeatureStyles();
         }
 
+
+        private void SelectSingleFeature2(MPoint screenPosition)
+        {
+            // Get current resolution (map units per pixel)
+            double resolution = MapControl.Map.Navigator.Viewport.Resolution;
+
+            // Calculate dynamic tolerance - these values may need adjustment
+            int toleranceInPixels = (int)Math.Max(5, 50 / resolution); // Minimum 5 pixels, scales with zoom
+            double toleranceInMapUnits = toleranceInPixels * resolution;
+
+            // Get map info with tolerance
+            var mapInfo = MapControl.GetMapInfo(screenPosition, toleranceInPixels);
+
+            Debug.WriteLine($"Selection at zoom: 1:{1 / resolution} with tolerance: {toleranceInPixels}px ({toleranceInMapUnits} map units)");
+
+            if (mapInfo?.Feature == null)
+            {
+                Debug.WriteLine("No feature found at click position");
+                return;
+            }
+
+            // Check if feature is already selected using more reliable comparison
+            var existingFeature = _selectionState.Features.FirstOrDefault(f =>
+                f is GeometryFeature gf1 &&
+                mapInfo.Feature is GeometryFeature gf2 &&
+                gf1.Geometry.EqualsTopologically(gf2.Geometry));
+
+            if (existingFeature != null)
+            {
+                _selectionState.Features.Remove(existingFeature);
+                Debug.WriteLine("Feature deselected");
+            }
+            else
+            {
+                _selectionState.Features.Add(mapInfo.Feature);
+                Debug.WriteLine("Feature selected");
+            }
+
+            UpdateFeatureStyles();
+        }
         private void SelectSingleFeature(MPoint worldPosition)
         {
             double resolution = MapControl.Map.Navigator.Viewport.Resolution;
+            int tolerance = (int)(resolution * 5); 
 
-            var info = MapControl.GetMapInfo(worldPosition);
+            var info = MapControl.GetMapInfo(worldPosition,tolerance);
 
 
             // Add debug logging
@@ -306,39 +392,31 @@ namespace WPFMapSUi
 
         private void UpdateFeatureStyles()
         {
-            Debug.WriteLine("Updating feature styles...");
-
             // Clear previous highlights
             var existingHighlightLayer = MapControl.Map.Layers.FirstOrDefault(l => l.Name == "SelectionHighlight");
             if (existingHighlightLayer != null)
             {
                 MapControl.Map.Layers.Remove(existingHighlightLayer);
-                Debug.WriteLine("Removed existing highlight layer");
             }
 
             if (_selectionState.Features.Count > 0)
             {
-                Debug.WriteLine($"Creating highlights for {_selectionState.Features.Count} features");
-
-                btnClearSelection.Visibility = Visibility.Visible;
-
                 var highlightFeatures = new List<IFeature>();
                 foreach (var feature in _selectionState.Features)
                 {
                     if (feature is GeometryFeature geometryFeature)
                     {
-                        var highlightFeature = new GeometryFeature(geometryFeature.Geometry)
+                        var highlightFeature = new GeometryFeature(geometryFeature.Geometry.Copy())
                         {
                             Styles = new List<IStyle>
-                            {
-                                new VectorStyle
-                                {
-                                    Enabled = true,
-                                    Fill = new Brush(Color.FromArgb(100, 255, 255, 0)),
-                                    Outline = new Pen(Color.Red, 2),
-                                    Opacity = 1.0f
-                                }
-                            }
+                    {
+                        new VectorStyle
+                        {
+                            Fill = new Brush(Color.FromArgb(100, 255, 255, 0)),
+                            Outline = new Pen(Color.Red, 2),
+                            Opacity = 1.0f
+                        }
+                    }
                         };
                         highlightFeatures.Add(highlightFeature);
                     }
@@ -348,19 +426,15 @@ namespace WPFMapSUi
                 {
                     DataSource = new MemoryProvider(highlightFeatures),
                     Style = null,
-                    IsMapInfoLayer = false,
-                    Opacity = 1.0,
-                    Enabled = true
+                    IsMapInfoLayer = false
                 };
 
-                // Add the layer at the top of the layer stack
                 MapControl.Map.Layers.Insert(0, newHighlightLayer);
-                Debug.WriteLine("Added new highlight layer");
+                btnClearSelection.Visibility = Visibility.Visible;
             }
             else
             {
                 btnClearSelection.Visibility = Visibility.Collapsed;
-                Debug.WriteLine("No features to highlight");
             }
 
             UpdateAttributeGrid();
@@ -536,7 +610,7 @@ namespace WPFMapSUi
 
             // Initialize map properties
             MapControl.Map.BackColor = Mapsui.Styles.Color.White;
-            MapControl.Map.CRS = "EPSG:3857"; 
+            MapControl.Map.CRS = "EPSG:3857";
 
             var shapeProvider = new ShapeFile(shapefilePath, true)
             {
@@ -589,7 +663,7 @@ namespace WPFMapSUi
                 MapControl.Map.Layers.Add(vectorLayer);
 
                 // Set map bounds
-                MapControl.Map.Navigator.OverridePanBounds = extent;
+                //MapControl.Map.Navigator.OverridePanBounds = extent;
                 MapControl.Map.Home = n => n.ZoomToBox(extent, MBoxFit.Fit);
 
                 // Add widgets
@@ -613,27 +687,6 @@ namespace WPFMapSUi
             {
                 Debug.WriteLine($"Error loading shapefile: {ex.Message}");
                 MessageBox.Show("The file is corrupt or empty, please select a valid shapefile");
-            }
-        }
-
-        private void ReadShapefileWithNTS(string shapefilePath)
-        {
-            var basePath = Path.ChangeExtension(shapefilePath, null);
-
-            using var dbf = new DbfReader(shapefilePath);
-            var nameList = new List<string>();
-            var valueList = new List<string>();
-
-            foreach (var record in dbf)
-            {
-                foreach (var fieldName in record.GetNames())
-                {
-                    nameList.Add(fieldName);
-                }
-                foreach (var fieldValue in record.GetValues())
-                {
-                    valueList.Add(fieldValue != null ? fieldValue.ToString() : "");
-                }
             }
         }
         #endregion
@@ -866,8 +919,6 @@ namespace WPFMapSUi
             MapControl.Map.Refresh();
         }
         #endregion
-        
-
         
     }
 }

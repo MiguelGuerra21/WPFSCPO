@@ -1561,11 +1561,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mrg8\\source\\repos\\WPFMapSUi\\WPFMapSUi\\WPFMapSUi.csproj",
+      "projectUniqueName": "C:\\Users\\mrg8\\source\\repos\\WPFSCPO\\WPFMapSUi\\WPFMapSUi.csproj",
       "projectName": "WPFMapSUi",
-      "projectPath": "C:\\Users\\mrg8\\source\\repos\\WPFMapSUi\\WPFMapSUi\\WPFMapSUi.csproj",
+      "projectPath": "C:\\Users\\mrg8\\source\\repos\\WPFSCPO\\WPFMapSUi\\WPFMapSUi.csproj",
       "packagesPath": "C:\\Users\\mrg8\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mrg8\\source\\repos\\WPFMapSUi\\WPFMapSUi\\obj\\",
+      "outputPath": "C:\\Users\\mrg8\\source\\repos\\WPFSCPO\\WPFMapSUi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
