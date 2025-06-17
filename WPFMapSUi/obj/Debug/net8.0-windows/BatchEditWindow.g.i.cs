@@ -69,7 +69,7 @@ namespace WPFMapSUi {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/WPFMapSUi;component/batcheditwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/WPFMapSUi;V1.0.0.0;component/batcheditwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\BatchEditWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

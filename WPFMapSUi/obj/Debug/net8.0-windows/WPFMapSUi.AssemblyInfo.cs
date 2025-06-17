@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WPFMapSUi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bedb98465cdb23c7c307ed47ff73246ab742ccf2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7e3e17de7d99864fd4e3e3da8d1faba1fd54a911")]
 [assembly: System.Reflection.AssemblyProductAttribute("WPFMapSUi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WPFMapSUi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
