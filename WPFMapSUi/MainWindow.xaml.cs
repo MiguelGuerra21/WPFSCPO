@@ -71,11 +71,12 @@ namespace WPFMapSUi
         #region Initialize Map Control Events
         private void InitializeMapControlEvents()
         {
-            MapControl.MouseLeftButtonDown += MapControl_MouseLeftButtonDown;
+            MapControl.MouseLeftButtonDown += MapControl_MouseLeftButtonDown2;
             MapControl.MouseMove += MapControl_MouseMove;
             MapControl.MouseLeftButtonUp += MapControl_MouseLeftButtonUp;
             MapControl.KeyDown += MapControl_KeyDown;
             MapControl.KeyUp += MapControl_KeyUp;
+            MapControl.GotKeyboardFocus += MapControl_GotKeyboardFocus;
             MapControl.Focusable = true;
             MapControl.Focus();
         }
@@ -102,65 +103,52 @@ namespace WPFMapSUi
             }
         }
 
-        private void MapControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void MapControl_MouseLeftButtonDown2(object sender, MouseButtonEventArgs e)
         {
-            if (!_isControlPressed)
+            if (!_isControlPressed) return;
+
+            var position = e.GetPosition(MapControl);
+            var screenPosition = new MPoint(position.X, position.Y);
+
+            // Get map info at clicked position with a reasonable tolerance
+            int toleranceInPixels = 10; // Adjust this value as needed
+            var mapInfo = MapControl.GetMapInfo(screenPosition, toleranceInPixels);
+
+            if (mapInfo?.Feature == null)
             {
-                // Let the map handle navigation
-                e.Handled = false;
+                Debug.WriteLine("No feature found at click position");
                 return;
             }
 
-            var position = e.GetPosition(MapControl);
-            var worldPosition = MapControl.Map.Navigator.Viewport.ScreenToWorld(position.X, position.Y);
+            // Check if feature is already selected
+            var existingFeature = _selectionState.Features.FirstOrDefault(f =>
+                FeaturesAreEqual(f, mapInfo.Feature));
 
-            Debug.WriteLine($"Screen: {position.X},{position.Y} -> World: {worldPosition.X},{worldPosition.Y}");
-            Debug.WriteLine($"Viewport resolution: {MapControl.Map.Navigator.Viewport.Resolution}");
-            Debug.WriteLine($"worldPosition : "+ worldPosition + " Position : " + position);
+            if (existingFeature != null)
+            {
+                _selectionState.Features.Remove(existingFeature);
+                Debug.WriteLine("Feature deselected");
+            }
+            else
+            {
+                _selectionState.Features.Add(mapInfo.Feature);
+                Debug.WriteLine("Feature selected");
+            }
 
+            UpdateFeatureStyles();
             e.Handled = true;
-            _isMouseDown = true;
-            _dragStartPoint = worldPosition;
-
-            // For single click selection
-            if (e.ClickCount == 1)
-            {
-                SelectSingleFeature(worldPosition);
-            }
-            else // For box selection
-            {
-                _selectionBox = new GeometryFeature(new Polygon( new LinearRing(new[]
-                {
-                new Coordinate(worldPosition.X, worldPosition.Y),
-                new Coordinate(worldPosition.X, worldPosition.Y),
-                new Coordinate(worldPosition.X, worldPosition.Y),
-                new Coordinate(worldPosition.X, worldPosition.Y),
-                new Coordinate(worldPosition.X, worldPosition.Y)
-                })))
-                {
-                    Styles = new List<IStyle>
-                    {
-                        new VectorStyle
-                        {
-                            Enabled = true,
-                            Fill = new Brush(Color.FromArgb(80, 100, 150, 255)),
-                            Outline = new Pen(Color.FromArgb(180, 0, 0, 255), 2),
-                            Opacity = 1.0f
-                        }
-                    }
-                };
-
-                var selectionLayer = new Layer("SelectionBox")
-                {
-                    DataSource = new MemoryProvider(_selectionBox),
-                    Style = null,
-                    IsMapInfoLayer = true
-                };
-
-                MapControl.Map.Layers.Add(selectionLayer);
-            }
         }
 
+        private bool FeaturesAreEqual(IFeature feature1, IFeature feature2)
+        {
+            if (feature1 == feature2) return true;
+            if (feature1 is not GeometryFeature gf1 || feature2 is not GeometryFeature gf2)
+                return false;
+            if (gf1.Geometry == null || gf2.Geometry == null)
+                return false;
+
+            return gf1.Geometry.EqualsExact(gf2.Geometry);
+        }
         private void MapControl_MouseMove(object sender, MouseEventArgs e)
         {
             if (!_isMouseDown || !_isControlPressed || _selectionBox == null) return;
@@ -168,13 +156,19 @@ namespace WPFMapSUi
             var position = e.GetPosition(MapControl);
             var worldPosition = MapControl.Map.Navigator.Viewport.ScreenToWorld(position.X, position.Y);
 
+            // Create coordinates that work in all directions
+            var minX = Math.Min(_dragStartPoint.X, worldPosition.X);
+            var maxX = Math.Max(_dragStartPoint.X, worldPosition.X);
+            var minY = Math.Min(_dragStartPoint.Y, worldPosition.Y);
+            var maxY = Math.Max(_dragStartPoint.Y, worldPosition.Y);
+
             var coordinates = new[]
             {
-        new Coordinate(_dragStartPoint.X, _dragStartPoint.Y),
-        new Coordinate(worldPosition.X, _dragStartPoint.Y),
-        new Coordinate(worldPosition.X, worldPosition.Y),
-        new Coordinate(_dragStartPoint.X, worldPosition.Y),
-        new Coordinate(_dragStartPoint.X, _dragStartPoint.Y)
+        new Coordinate(minX, minY),
+        new Coordinate(maxX, minY),
+        new Coordinate(maxX, maxY),
+        new Coordinate(minX, maxY),
+        new Coordinate(minX, minY)
     };
 
             if (_selectionBox is GeometryFeature geometryFeature)
@@ -198,11 +192,8 @@ namespace WPFMapSUi
                     var position = e.GetPosition(MapControl);
                     var worldEndPoint = MapControl.Map.Navigator.Viewport.ScreenToWorld(position.X, position.Y);
 
-                    // Only do box selection if we've actually dragged a meaningful distance
-                    if (_dragStartPoint.Distance(worldEndPoint) > MapControl.Map.Navigator.Viewport.Resolution * 5)
-                    {
+                    
                         SelectFeaturesInBox(_dragStartPoint, worldEndPoint);
-                    }
 
                     // Remove selection box layer
                     var selectionLayer = MapControl.Map.Layers.FirstOrDefault(l => l.Name == "SelectionBox");
@@ -223,122 +214,108 @@ namespace WPFMapSUi
         #region Feature Selection and Highlighting
         private async void SelectFeaturesInBox(MPoint start, MPoint end)
         {
+            // Create envelope with correct min/max values
             var box = new Envelope(
                 Math.Min(start.X, end.X),
                 Math.Max(start.X, end.X),
                 Math.Min(start.Y, end.Y),
                 Math.Max(start.Y, end.Y));
 
-            _selectionState.Features.Clear();
+            Debug.WriteLine($"Selection box: {box}");
 
-            var selectionPolygon = new Polygon(new LinearRing(new[]
-            {
-                new Coordinate(box.MinX, box.MinY),
-                new Coordinate(box.MaxX, box.MinY),
-                new Coordinate(box.MaxX, box.MaxY),
-                new Coordinate(box.MinX, box.MaxY),
-                new Coordinate(box.MinX, box.MinY)
-            }));
+            _selectionState.Features.Clear();
 
             foreach (var layer in MapControl.Map.Layers.OfType<Layer>())
             {
                 if (layer.DataSource == null || layer.Name == "SelectionBox") continue;
 
+                // Create MRect with correct coordinates
+                var rect = new MRect(box.MinX, box.MinY, box.MaxX, box.MaxY);
+                Debug.WriteLine($"Fetching features in rect: {rect}");
+
                 var fetchInfo = new FetchInfo(
-                    new MSection(new MRect(box.MinX, box.MinY, box.MaxX, box.MaxY),
-                    MapControl.Map.Navigator.Viewport.Resolution),
+                    new MSection(rect, MapControl.Map.Navigator.Viewport.Resolution),
                     ChangeType.Discrete.ToString());
 
-                var features = layer.DataSource.GetFeaturesAsync(fetchInfo);
-                foreach (var feature in await features)
+                var features = await layer.DataSource.GetFeaturesAsync(fetchInfo);
+                Debug.WriteLine($"Found {features.Count()} features in bounding box");
+
+                foreach (var feature in features)
                 {
                     if (feature is GeometryFeature geometryFeature &&
                         geometryFeature.Geometry != null &&
-                        geometryFeature.Geometry.Intersects(selectionPolygon))
+                        geometryFeature.Geometry.EnvelopeInternal.Intersects(box))
                     {
+                        Debug.WriteLine($"Adding feature: {geometryFeature}");
                         _selectionState.Features.Add(feature);
                     }
                 }
             }
 
+            Debug.WriteLine($"Total features selected: {_selectionState.Features.Count}");
             UpdateFeatureStyles();
         }
 
-        private void SelectSingleFeature(MPoint worldPosition)
+
+        private void SelectSingleFeature2(MPoint screenPosition)
         {
-            double resolution = MapControl.Map.Navigator.Viewport.Resolution;
+            Debug.WriteLine($"Selection at: {screenPosition}");
 
-            var info = MapControl.GetMapInfo(worldPosition);
+            // Get map info with tolerance
+            int toleranceInPixels = 10;
+            var mapInfo = MapControl.GetMapInfo(screenPosition, toleranceInPixels);
 
-
-            // Add debug logging
-            Debug.WriteLine($"MapInfo at {worldPosition}:");
-            Debug.WriteLine($"Layer: {info?.Layer?.Name}");
-            Debug.WriteLine($"Feature: {info?.Feature}");
-            Debug.WriteLine($"All layers: {string.Join(", ", MapControl.Map.Layers.Select(l => l.Name))}");
-            if (info?.Feature == null)
+            if (mapInfo?.Feature == null)
             {
                 Debug.WriteLine("No feature found at click position");
                 return;
             }
 
-            Debug.WriteLine($"Feature found: {info.Feature.GetType().Name}");
-
             // Check if feature is already selected
-            var existingIndex = _selectionState.Features.FindIndex(f =>
-                f is GeometryFeature gf1 &&
-                info.Feature is GeometryFeature gf2 &&
-                gf1.Geometry.EqualsExact(gf2.Geometry));
+            var existingFeature = _selectionState.Features.FirstOrDefault(f =>
+                FeaturesAreEqual(f, mapInfo.Feature));
 
-            if (existingIndex >= 0)
+            if (existingFeature != null)
             {
-                _selectionState.Features.RemoveAt(existingIndex);
+                _selectionState.Features.Remove(existingFeature);
                 Debug.WriteLine("Feature deselected");
             }
             else
             {
-                _selectionState.Features.Add(info.Feature);
+                _selectionState.Features.Add(mapInfo.Feature);
                 Debug.WriteLine("Feature selected");
             }
 
             UpdateFeatureStyles();
+            Debug.WriteLine($"Total selected: {_selectionState.Features.Count}");
         }
-
         private void UpdateFeatureStyles()
         {
-            Debug.WriteLine("Updating feature styles...");
-
             // Clear previous highlights
             var existingHighlightLayer = MapControl.Map.Layers.FirstOrDefault(l => l.Name == "SelectionHighlight");
             if (existingHighlightLayer != null)
             {
                 MapControl.Map.Layers.Remove(existingHighlightLayer);
-                Debug.WriteLine("Removed existing highlight layer");
             }
 
             if (_selectionState.Features.Count > 0)
             {
-                Debug.WriteLine($"Creating highlights for {_selectionState.Features.Count} features");
-
-                btnClearSelection.Visibility = Visibility.Visible;
-
                 var highlightFeatures = new List<IFeature>();
                 foreach (var feature in _selectionState.Features)
                 {
                     if (feature is GeometryFeature geometryFeature)
                     {
-                        var highlightFeature = new GeometryFeature(geometryFeature.Geometry)
+                        var highlightFeature = new GeometryFeature(geometryFeature.Geometry.Copy())
                         {
                             Styles = new List<IStyle>
-                            {
-                                new VectorStyle
-                                {
-                                    Enabled = true,
-                                    Fill = new Brush(Color.FromArgb(100, 255, 255, 0)),
-                                    Outline = new Pen(Color.Red, 2),
-                                    Opacity = 1.0f
-                                }
-                            }
+                    {
+                        new VectorStyle
+                        {
+                            Fill = new Brush(Color.FromArgb(100, 255, 255, 0)),
+                            Outline = new Pen(Color.Red, 2),
+                            Opacity = 1.0f
+                        }
+                    }
                         };
                         highlightFeatures.Add(highlightFeature);
                     }
@@ -348,19 +325,15 @@ namespace WPFMapSUi
                 {
                     DataSource = new MemoryProvider(highlightFeatures),
                     Style = null,
-                    IsMapInfoLayer = false,
-                    Opacity = 1.0,
-                    Enabled = true
+                    IsMapInfoLayer = false
                 };
 
-                // Add the layer at the top of the layer stack
                 MapControl.Map.Layers.Insert(0, newHighlightLayer);
-                Debug.WriteLine("Added new highlight layer");
+                btnClearSelection.Visibility = Visibility.Visible;
             }
             else
             {
                 btnClearSelection.Visibility = Visibility.Collapsed;
-                Debug.WriteLine("No features to highlight");
             }
 
             UpdateAttributeGrid();
@@ -454,21 +427,67 @@ namespace WPFMapSUi
         {
             if (_selectionState.Features.Count < 2) return;
 
-            var batchWindow = new BatchEditWindow(_selectionState.Features)
+            // Create a new list with cloned features
+            var featuresCopy = new List<IFeature>();
+            foreach (var feature in _selectionState.Features)
+            {
+                if (feature is GeometryFeature gf)
+                {
+                    var clone = new GeometryFeature(gf.Geometry.Copy());
+
+                    // Copy attributes
+                    foreach (var field in gf.Fields)
+                    {
+                        clone[field] = gf[field];
+                    }
+
+                    featuresCopy.Add(clone);
+                }
+            }
+
+            var batchWindow = new BatchEditWindow(featuresCopy)
             {
                 Owner = this
             };
 
             if (batchWindow.ShowDialog() == true)
             {
-                // Changes were applied
+                // Update the original features with modified values
+                for (int i = 0; i < featuresCopy.Count; i++)
+                {
+                    var modifiedFeature = featuresCopy[i] as GeometryFeature;
+                    var originalFeature = _selectionState.Features[i] as GeometryFeature;
+
+                    if (modifiedFeature != null && originalFeature != null)
+                    {
+                        foreach (var field in modifiedFeature.Fields)
+                        {
+                            originalFeature[field] = modifiedFeature[field];
+                        }
+                    }
+                }
+
                 MarkChangesAsUnsaved();
                 MessageBox.Show("Cambios aplicados a los elementos seleccionados.", "Éxito",
                     MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // Refresh the map to show any style changes
-                MapControl.Refresh();
+                // Refresh the UI
+                UpdateFeatureStyles();
+
+                // Return focus to map control
+                MapControl.Focus();
             }
+        }
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+            MapControl.Focus();
+        }
+
+        private void MapControl_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            // Ensure the MapControl stays focused
+            MapControl.Focus();
         }
         #endregion
 
@@ -536,7 +555,7 @@ namespace WPFMapSUi
 
             // Initialize map properties
             MapControl.Map.BackColor = Mapsui.Styles.Color.White;
-            MapControl.Map.CRS = "EPSG:3857"; 
+            MapControl.Map.CRS = "EPSG:3857";
 
             var shapeProvider = new ShapeFile(shapefilePath, true)
             {
@@ -589,7 +608,7 @@ namespace WPFMapSUi
                 MapControl.Map.Layers.Add(vectorLayer);
 
                 // Set map bounds
-                MapControl.Map.Navigator.OverridePanBounds = extent;
+                //MapControl.Map.Navigator.OverridePanBounds = extent;
                 MapControl.Map.Home = n => n.ZoomToBox(extent, MBoxFit.Fit);
 
                 // Add widgets
@@ -613,27 +632,6 @@ namespace WPFMapSUi
             {
                 Debug.WriteLine($"Error loading shapefile: {ex.Message}");
                 MessageBox.Show("The file is corrupt or empty, please select a valid shapefile");
-            }
-        }
-
-        private void ReadShapefileWithNTS(string shapefilePath)
-        {
-            var basePath = Path.ChangeExtension(shapefilePath, null);
-
-            using var dbf = new DbfReader(shapefilePath);
-            var nameList = new List<string>();
-            var valueList = new List<string>();
-
-            foreach (var record in dbf)
-            {
-                foreach (var fieldName in record.GetNames())
-                {
-                    nameList.Add(fieldName);
-                }
-                foreach (var fieldValue in record.GetValues())
-                {
-                    valueList.Add(fieldValue != null ? fieldValue.ToString() : "");
-                }
             }
         }
         #endregion
@@ -664,8 +662,6 @@ namespace WPFMapSUi
 
                     if (shapefileLayer?.DataSource is not ShapeFile shapefile)
                     {
-                        MessageBox.Show("No se encontró capa de shapefile", "Error",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
                         progressDialog.Close();
                         return;
                     }
@@ -673,8 +669,6 @@ namespace WPFMapSUi
                     var extent = shapefile.GetExtent();
                     if (extent == null)
                     {
-                        MessageBox.Show("El shapefile no tiene un área válida para procesar.", "Error",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
                         progressDialog.Close();
                         return;
                     }
@@ -683,41 +677,23 @@ namespace WPFMapSUi
                         new MSection(extent, MapControl.Map.Navigator.Viewport.Resolution),
                         ChangeType.Discrete.ToString());
 
-                    var fieldTypes = new Dictionary<string, Type>();
+                    // Get a sample feature to determine field types
                     var sampleFeature = (await shapefile.GetFeaturesAsync(fetchInfo)).Cast<GeometryFeature>().FirstOrDefault();
-                    if (sampleFeature != null)
+                    if (sampleFeature == null)
                     {
-                        foreach (var field in sampleFeature.Fields)
-                        {
-                            var value = sampleFeature[field];
-                            fieldTypes[field] = value?.GetType() ?? typeof(string);
-                        }
+                        progressDialog.Close();
+                        return;
                     }
 
-                    var dbfFields = new List<DbfField>();
-                    foreach (var field in fieldTypes.Keys)
+                    // Create DBF fields based on the sample feature
+                    var dbfFields = CreateDbfFieldsFromSampleFeature(sampleFeature).ToList(); // Convert to List to use FindIndex
+                    if (dbfFields.Count == 0)
                     {
-                        var fieldType = fieldTypes[field];
-                        var cleanFieldName = CleanFieldName(field);
-
-                        if (fieldType == typeof(DateTime))
-                        {
-                            dbfFields.Add(DbfField.Create(cleanFieldName, typeof(DateTime)));
-                        }
-                        else if (fieldType == typeof(decimal) || fieldType == typeof(double) || fieldType == typeof(float))
-                        {
-                            dbfFields.Add(DbfField.Create(cleanFieldName, typeof(double)));
-                        }
-                        else if (fieldType == typeof(int) || fieldType == typeof(short) || fieldType == typeof(long))
-                        {
-                            dbfFields.Add(DbfField.Create(cleanFieldName, typeof(int)));
-                        }
-                        else
-                        {
-                            dbfFields.Add(DbfField.Create(cleanFieldName, typeof(string)));
-                        }
+                        progressDialog.Close();
+                        MessageBox.Show("No se encontraron campos para guardar en el shapefile.", "Error",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
                     }
-
                     var options = new ShapefileWriterOptions(ShapeType.Polygon, dbfFields.ToArray());
                     using var writer = Shapefile.OpenWrite(Path.ChangeExtension(saveDialog.FileName, null), options);
 
@@ -733,7 +709,7 @@ namespace WPFMapSUi
                         {
                             var value = mapFeature[field];
                             var cleanFieldName = CleanFieldName(field);
-                            var fieldIndex = dbfFields.FindIndex(f => f.Name.Equals(cleanFieldName, StringComparison.OrdinalIgnoreCase));
+                            var fieldIndex = dbfFields.FindIndex(f => f.Name.Equals(cleanFieldName, StringComparison.OrdinalIgnoreCase)); // Fix: Convert dbfFields to List
 
                             if (fieldIndex >= 0)
                             {
@@ -778,10 +754,18 @@ namespace WPFMapSUi
                 }
             }
         }
+
         #endregion
 
         #region Helper Methods
 
+        private void EnsureMapControlFocus()
+        {
+            if (!MapControl.IsFocused)
+            {
+                MapControl.Focus();
+            }
+        }
         private string CleanFieldName(string originalName)
         {
             var cleaned = Regex.Replace(originalName, "[^a-zA-Z0-9_]", "_");
@@ -865,9 +849,37 @@ namespace WPFMapSUi
             UpdateAttributeGrid();
             MapControl.Map.Refresh();
         }
-        #endregion
-        
+        private IEnumerable<DbfField> CreateDbfFieldsFromSampleFeature(IFeature sampleFeature)
+        {
+            var dbfFields = new List<DbfField>();
 
+            foreach (var field in sampleFeature.Fields)
+            {
+                var value = sampleFeature[field];
+                var cleanFieldName = CleanFieldName(field);
+
+                // Use DbfField.Create to create instances of DbfField
+                if (value is DateTime)
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(DateTime)));
+                }
+                else if (value is int || value is short || value is long)
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(int)));
+                }
+                else if (value is double || value is float || value is decimal)
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(double)));
+                }
+                else
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(string)));
+                }
+            }
+
+            return dbfFields;
+        }
+        #endregion
         
     }
 }

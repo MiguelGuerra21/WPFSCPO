@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "zkOi78xYD8c=",
+  "dgSpecHash": "/KQGKC968Bc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\mrg8\\source\\repos\\WPFMapSUi\\WPFMapSUi\\WPFMapSUi.csproj",
+  "projectFilePath": "C:\\Users\\mrg8\\source\\repos\\WPFSCPO\\WPFMapSUi\\WPFMapSUi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mrg8\\.nuget\\packages\\brutile\\5.0.6\\brutile.5.0.6.nupkg.sha512",
     "C:\\Users\\mrg8\\.nuget\\packages\\excss\\4.2.3\\excss.4.2.3.nupkg.sha512",
