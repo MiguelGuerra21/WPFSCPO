@@ -141,72 +141,14 @@ namespace WPFMapSUi
 
         private bool FeaturesAreEqual(IFeature feature1, IFeature feature2)
         {
-            if (feature1 is GeometryFeature gf1 && feature2 is GeometryFeature gf2)
-            {
-                return gf1.Geometry.EqualsExact(gf2.Geometry);
-            }
-            return false;
+            if (feature1 == feature2) return true;
+            if (feature1 is not GeometryFeature gf1 || feature2 is not GeometryFeature gf2)
+                return false;
+            if (gf1.Geometry == null || gf2.Geometry == null)
+                return false;
+
+            return gf1.Geometry.EqualsExact(gf2.Geometry);
         }
-
-
-        private void MapControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (!_isControlPressed)
-            {
-                e.Handled = false;
-                return;
-            }
-
-            var position = e.GetPosition(MapControl);
-            var worldPosition = MapControl.Map.Navigator.Viewport.ScreenToWorld(position.X, position.Y);
-
-            Debug.WriteLine($"Screen: {position.X},{position.Y} -> World: {worldPosition.X},{worldPosition.Y}");
-            Debug.WriteLine($"Viewport resolution: {MapControl.Map.Navigator.Viewport.Resolution}");
-            Debug.WriteLine($"worldPosition : "+ worldPosition + " Position : " + position);
-
-            e.Handled = true;
-            _isMouseDown = true;
-            _dragStartPoint = worldPosition;
-
-            // For single click selection
-            if (e.ClickCount == 1)
-            {
-                SelectSingleFeature2(worldPosition);
-            }
-            else // For box selection
-            {
-                _selectionBox = new GeometryFeature(new Polygon( new LinearRing(new[]
-                {
-                new Coordinate(worldPosition.X, worldPosition.Y),
-                new Coordinate(worldPosition.X, worldPosition.Y),
-                new Coordinate(worldPosition.X, worldPosition.Y),
-                new Coordinate(worldPosition.X, worldPosition.Y),
-                new Coordinate(worldPosition.X, worldPosition.Y)
-                })))
-                {
-                    Styles = new List<IStyle>
-                    {
-                        new VectorStyle
-                        {
-                            Enabled = true,
-                            Fill = new Brush(Color.FromArgb(80, 100, 150, 255)),
-                            Outline = new Pen(Color.FromArgb(180, 0, 0, 255), 2),
-                            Opacity = 1.0f
-                        }
-                    }
-                };
-
-                var selectionLayer = new Layer("SelectionBox")
-                {
-                    DataSource = new MemoryProvider(_selectionBox),
-                    Style = null,
-                    IsMapInfoLayer = true
-                };
-
-                MapControl.Map.Layers.Add(selectionLayer);
-            }
-        }
-
         private void MapControl_MouseMove(object sender, MouseEventArgs e)
         {
             if (!_isMouseDown || !_isControlPressed || _selectionBox == null) return;
@@ -214,13 +156,19 @@ namespace WPFMapSUi
             var position = e.GetPosition(MapControl);
             var worldPosition = MapControl.Map.Navigator.Viewport.ScreenToWorld(position.X, position.Y);
 
+            // Create coordinates that work in all directions
+            var minX = Math.Min(_dragStartPoint.X, worldPosition.X);
+            var maxX = Math.Max(_dragStartPoint.X, worldPosition.X);
+            var minY = Math.Min(_dragStartPoint.Y, worldPosition.Y);
+            var maxY = Math.Max(_dragStartPoint.Y, worldPosition.Y);
+
             var coordinates = new[]
             {
-        new Coordinate(_dragStartPoint.X, _dragStartPoint.Y),
-        new Coordinate(worldPosition.X, _dragStartPoint.Y),
-        new Coordinate(worldPosition.X, worldPosition.Y),
-        new Coordinate(_dragStartPoint.X, worldPosition.Y),
-        new Coordinate(_dragStartPoint.X, _dragStartPoint.Y)
+        new Coordinate(minX, minY),
+        new Coordinate(maxX, minY),
+        new Coordinate(maxX, maxY),
+        new Coordinate(minX, maxY),
+        new Coordinate(minX, minY)
     };
 
             if (_selectionBox is GeometryFeature geometryFeature)
@@ -244,11 +192,8 @@ namespace WPFMapSUi
                     var position = e.GetPosition(MapControl);
                     var worldEndPoint = MapControl.Map.Navigator.Viewport.ScreenToWorld(position.X, position.Y);
 
-                    // Only do box selection if we've actually dragged a meaningful distance
-                    if (_dragStartPoint.Distance(worldEndPoint) > MapControl.Map.Navigator.Viewport.Resolution * 5)
-                    {
+                    
                         SelectFeaturesInBox(_dragStartPoint, worldEndPoint);
-                    }
 
                     // Remove selection box layer
                     var selectionLayer = MapControl.Map.Layers.FirstOrDefault(l => l.Name == "SelectionBox");
@@ -269,61 +214,56 @@ namespace WPFMapSUi
         #region Feature Selection and Highlighting
         private async void SelectFeaturesInBox(MPoint start, MPoint end)
         {
+            // Create envelope with correct min/max values
             var box = new Envelope(
                 Math.Min(start.X, end.X),
                 Math.Max(start.X, end.X),
                 Math.Min(start.Y, end.Y),
                 Math.Max(start.Y, end.Y));
 
-            _selectionState.Features.Clear();
+            Debug.WriteLine($"Selection box: {box}");
 
-            var selectionPolygon = new Polygon(new LinearRing(new[]
-            {
-                new Coordinate(box.MinX, box.MinY),
-                new Coordinate(box.MaxX, box.MinY),
-                new Coordinate(box.MaxX, box.MaxY),
-                new Coordinate(box.MinX, box.MaxY),
-                new Coordinate(box.MinX, box.MinY)
-            }));
+            _selectionState.Features.Clear();
 
             foreach (var layer in MapControl.Map.Layers.OfType<Layer>())
             {
                 if (layer.DataSource == null || layer.Name == "SelectionBox") continue;
 
+                // Create MRect with correct coordinates
+                var rect = new MRect(box.MinX, box.MinY, box.MaxX, box.MaxY);
+                Debug.WriteLine($"Fetching features in rect: {rect}");
+
                 var fetchInfo = new FetchInfo(
-                    new MSection(new MRect(box.MinX, box.MinY, box.MaxX, box.MaxY),
-                    MapControl.Map.Navigator.Viewport.Resolution),
+                    new MSection(rect, MapControl.Map.Navigator.Viewport.Resolution),
                     ChangeType.Discrete.ToString());
 
-                var features = layer.DataSource.GetFeaturesAsync(fetchInfo);
-                foreach (var feature in await features)
+                var features = await layer.DataSource.GetFeaturesAsync(fetchInfo);
+                Debug.WriteLine($"Found {features.Count()} features in bounding box");
+
+                foreach (var feature in features)
                 {
                     if (feature is GeometryFeature geometryFeature &&
                         geometryFeature.Geometry != null &&
-                        geometryFeature.Geometry.Intersects(selectionPolygon))
+                        geometryFeature.Geometry.EnvelopeInternal.Intersects(box))
                     {
+                        Debug.WriteLine($"Adding feature: {geometryFeature}");
                         _selectionState.Features.Add(feature);
                     }
                 }
             }
 
+            Debug.WriteLine($"Total features selected: {_selectionState.Features.Count}");
             UpdateFeatureStyles();
         }
 
 
         private void SelectSingleFeature2(MPoint screenPosition)
         {
-            // Get current resolution (map units per pixel)
-            double resolution = MapControl.Map.Navigator.Viewport.Resolution;
-
-            // Calculate dynamic tolerance - these values may need adjustment
-            int toleranceInPixels = (int)Math.Max(5, 50 / resolution); // Minimum 5 pixels, scales with zoom
-            double toleranceInMapUnits = toleranceInPixels * resolution;
+            Debug.WriteLine($"Selection at: {screenPosition}");
 
             // Get map info with tolerance
+            int toleranceInPixels = 10;
             var mapInfo = MapControl.GetMapInfo(screenPosition, toleranceInPixels);
-
-            Debug.WriteLine($"Selection at zoom: 1:{1 / resolution} with tolerance: {toleranceInPixels}px ({toleranceInMapUnits} map units)");
 
             if (mapInfo?.Feature == null)
             {
@@ -331,11 +271,9 @@ namespace WPFMapSUi
                 return;
             }
 
-            // Check if feature is already selected using more reliable comparison
+            // Check if feature is already selected
             var existingFeature = _selectionState.Features.FirstOrDefault(f =>
-                f is GeometryFeature gf1 &&
-                mapInfo.Feature is GeometryFeature gf2 &&
-                gf1.Geometry.EqualsTopologically(gf2.Geometry));
+                FeaturesAreEqual(f, mapInfo.Feature));
 
             if (existingFeature != null)
             {
@@ -349,48 +287,8 @@ namespace WPFMapSUi
             }
 
             UpdateFeatureStyles();
+            Debug.WriteLine($"Total selected: {_selectionState.Features.Count}");
         }
-        private void SelectSingleFeature(MPoint worldPosition)
-        {
-            double resolution = MapControl.Map.Navigator.Viewport.Resolution;
-            int tolerance = (int)(resolution * 5); 
-
-            var info = MapControl.GetMapInfo(worldPosition,tolerance);
-
-
-            // Add debug logging
-            Debug.WriteLine($"MapInfo at {worldPosition}:");
-            Debug.WriteLine($"Layer: {info?.Layer?.Name}");
-            Debug.WriteLine($"Feature: {info?.Feature}");
-            Debug.WriteLine($"All layers: {string.Join(", ", MapControl.Map.Layers.Select(l => l.Name))}");
-            if (info?.Feature == null)
-            {
-                Debug.WriteLine("No feature found at click position");
-                return;
-            }
-
-            Debug.WriteLine($"Feature found: {info.Feature.GetType().Name}");
-
-            // Check if feature is already selected
-            var existingIndex = _selectionState.Features.FindIndex(f =>
-                f is GeometryFeature gf1 &&
-                info.Feature is GeometryFeature gf2 &&
-                gf1.Geometry.EqualsExact(gf2.Geometry));
-
-            if (existingIndex >= 0)
-            {
-                _selectionState.Features.RemoveAt(existingIndex);
-                Debug.WriteLine("Feature deselected");
-            }
-            else
-            {
-                _selectionState.Features.Add(info.Feature);
-                Debug.WriteLine("Feature selected");
-            }
-
-            UpdateFeatureStyles();
-        }
-
         private void UpdateFeatureStyles()
         {
             // Clear previous highlights
