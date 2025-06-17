@@ -36,21 +36,22 @@ namespace WPFMapSUi
 
             foreach (var field in allFields)
             {
-                // Check if all features have this field
-                if (!SelectedFeatures.All(f => f.Fields.Contains(field)))
-                    continue;
-
-                // Get sample value (first non-null if possible)
-                var sampleValue = SelectedFeatures
+                // Get values for this field from all features
+                var values = SelectedFeatures
+                    .Where(f => f.Fields.Contains(field))
                     .Select(f => f[field])
-                    .FirstOrDefault(v => v != null);
+                    .ToList();
+
+                // Check if all values are the same
+                var firstValue = values.FirstOrDefault();
+                bool allSame = values.All(v => object.Equals(v, firstValue));
 
                 attributes.Add(new BatchEditAttribute
                 {
                     Key = field,
-                    CurrentValue = sampleValue?.ToString() ?? "[Varios valores]",
+                    CurrentValue = allSame ? (firstValue?.ToString() ?? "") : "[Varios valores]",
                     NewValue = null,
-                    ValueType = sampleValue?.GetType() ?? typeof(string)
+                    ValueType = firstValue?.GetType() ?? typeof(string)
                 });
             }
 

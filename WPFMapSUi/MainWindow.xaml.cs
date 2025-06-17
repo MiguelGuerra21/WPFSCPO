@@ -76,6 +76,7 @@ namespace WPFMapSUi
             MapControl.MouseLeftButtonUp += MapControl_MouseLeftButtonUp;
             MapControl.KeyDown += MapControl_KeyDown;
             MapControl.KeyUp += MapControl_KeyUp;
+            MapControl.GotKeyboardFocus += MapControl_GotKeyboardFocus;
             MapControl.Focusable = true;
             MapControl.Focus();
         }
@@ -528,21 +529,67 @@ namespace WPFMapSUi
         {
             if (_selectionState.Features.Count < 2) return;
 
-            var batchWindow = new BatchEditWindow(_selectionState.Features)
+            // Create a new list with cloned features
+            var featuresCopy = new List<IFeature>();
+            foreach (var feature in _selectionState.Features)
+            {
+                if (feature is GeometryFeature gf)
+                {
+                    var clone = new GeometryFeature(gf.Geometry.Copy());
+
+                    // Copy attributes
+                    foreach (var field in gf.Fields)
+                    {
+                        clone[field] = gf[field];
+                    }
+
+                    featuresCopy.Add(clone);
+                }
+            }
+
+            var batchWindow = new BatchEditWindow(featuresCopy)
             {
                 Owner = this
             };
 
             if (batchWindow.ShowDialog() == true)
             {
-                // Changes were applied
+                // Update the original features with modified values
+                for (int i = 0; i < featuresCopy.Count; i++)
+                {
+                    var modifiedFeature = featuresCopy[i] as GeometryFeature;
+                    var originalFeature = _selectionState.Features[i] as GeometryFeature;
+
+                    if (modifiedFeature != null && originalFeature != null)
+                    {
+                        foreach (var field in modifiedFeature.Fields)
+                        {
+                            originalFeature[field] = modifiedFeature[field];
+                        }
+                    }
+                }
+
                 MarkChangesAsUnsaved();
                 MessageBox.Show("Cambios aplicados a los elementos seleccionados.", "Éxito",
                     MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // Refresh the map to show any style changes
-                MapControl.Refresh();
+                // Refresh the UI
+                UpdateFeatureStyles();
+
+                // Return focus to map control
+                MapControl.Focus();
             }
+        }
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+            MapControl.Focus();
+        }
+
+        private void MapControl_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            // Ensure the MapControl stays focused
+            MapControl.Focus();
         }
         #endregion
 
@@ -717,8 +764,6 @@ namespace WPFMapSUi
 
                     if (shapefileLayer?.DataSource is not ShapeFile shapefile)
                     {
-                        MessageBox.Show("No se encontró capa de shapefile", "Error",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
                         progressDialog.Close();
                         return;
                     }
@@ -726,8 +771,6 @@ namespace WPFMapSUi
                     var extent = shapefile.GetExtent();
                     if (extent == null)
                     {
-                        MessageBox.Show("El shapefile no tiene un área válida para procesar.", "Error",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
                         progressDialog.Close();
                         return;
                     }
@@ -736,41 +779,23 @@ namespace WPFMapSUi
                         new MSection(extent, MapControl.Map.Navigator.Viewport.Resolution),
                         ChangeType.Discrete.ToString());
 
-                    var fieldTypes = new Dictionary<string, Type>();
+                    // Get a sample feature to determine field types
                     var sampleFeature = (await shapefile.GetFeaturesAsync(fetchInfo)).Cast<GeometryFeature>().FirstOrDefault();
-                    if (sampleFeature != null)
+                    if (sampleFeature == null)
                     {
-                        foreach (var field in sampleFeature.Fields)
-                        {
-                            var value = sampleFeature[field];
-                            fieldTypes[field] = value?.GetType() ?? typeof(string);
-                        }
+                        progressDialog.Close();
+                        return;
                     }
 
-                    var dbfFields = new List<DbfField>();
-                    foreach (var field in fieldTypes.Keys)
+                    // Create DBF fields based on the sample feature
+                    var dbfFields = CreateDbfFieldsFromSampleFeature(sampleFeature).ToList(); // Convert to List to use FindIndex
+                    if (dbfFields.Count == 0)
                     {
-                        var fieldType = fieldTypes[field];
-                        var cleanFieldName = CleanFieldName(field);
-
-                        if (fieldType == typeof(DateTime))
-                        {
-                            dbfFields.Add(DbfField.Create(cleanFieldName, typeof(DateTime)));
-                        }
-                        else if (fieldType == typeof(decimal) || fieldType == typeof(double) || fieldType == typeof(float))
-                        {
-                            dbfFields.Add(DbfField.Create(cleanFieldName, typeof(double)));
-                        }
-                        else if (fieldType == typeof(int) || fieldType == typeof(short) || fieldType == typeof(long))
-                        {
-                            dbfFields.Add(DbfField.Create(cleanFieldName, typeof(int)));
-                        }
-                        else
-                        {
-                            dbfFields.Add(DbfField.Create(cleanFieldName, typeof(string)));
-                        }
+                        progressDialog.Close();
+                        MessageBox.Show("No se encontraron campos para guardar en el shapefile.", "Error",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
                     }
-
                     var options = new ShapefileWriterOptions(ShapeType.Polygon, dbfFields.ToArray());
                     using var writer = Shapefile.OpenWrite(Path.ChangeExtension(saveDialog.FileName, null), options);
 
@@ -786,7 +811,7 @@ namespace WPFMapSUi
                         {
                             var value = mapFeature[field];
                             var cleanFieldName = CleanFieldName(field);
-                            var fieldIndex = dbfFields.FindIndex(f => f.Name.Equals(cleanFieldName, StringComparison.OrdinalIgnoreCase));
+                            var fieldIndex = dbfFields.FindIndex(f => f.Name.Equals(cleanFieldName, StringComparison.OrdinalIgnoreCase)); // Fix: Convert dbfFields to List
 
                             if (fieldIndex >= 0)
                             {
@@ -831,10 +856,18 @@ namespace WPFMapSUi
                 }
             }
         }
+
         #endregion
 
         #region Helper Methods
 
+        private void EnsureMapControlFocus()
+        {
+            if (!MapControl.IsFocused)
+            {
+                MapControl.Focus();
+            }
+        }
         private string CleanFieldName(string originalName)
         {
             var cleaned = Regex.Replace(originalName, "[^a-zA-Z0-9_]", "_");
@@ -917,6 +950,36 @@ namespace WPFMapSUi
             ClearAllSelections();
             UpdateAttributeGrid();
             MapControl.Map.Refresh();
+        }
+        private IEnumerable<DbfField> CreateDbfFieldsFromSampleFeature(IFeature sampleFeature)
+        {
+            var dbfFields = new List<DbfField>();
+
+            foreach (var field in sampleFeature.Fields)
+            {
+                var value = sampleFeature[field];
+                var cleanFieldName = CleanFieldName(field);
+
+                // Use DbfField.Create to create instances of DbfField
+                if (value is DateTime)
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(DateTime)));
+                }
+                else if (value is int || value is short || value is long)
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(int)));
+                }
+                else if (value is double || value is float || value is decimal)
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(double)));
+                }
+                else
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(string)));
+                }
+            }
+
+            return dbfFields;
         }
         #endregion
         
