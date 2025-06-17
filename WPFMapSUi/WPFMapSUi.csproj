@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Recursos\ObraImagen.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mapsui" Version="4.1.9" />
+    <PackageReference Include="Mapsui.ArcGIS" Version="4.1.9" />
+    <PackageReference Include="Mapsui.Nts" Version="4.1.9" />
+    <PackageReference Include="Mapsui.Wpf" Version="4.1.9" />
+    <PackageReference Include="NetTopologySuite" Version="2.6.0" />
+    <PackageReference Include="NetTopologySuite.Features" Version="2.2.0" />
+    <PackageReference Include="NetTopologySuite.IO.Esri.Shapefile" Version="1.2.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Recursos\ObraImagen.png" />
+  </ItemGroup>
+
+</Project>

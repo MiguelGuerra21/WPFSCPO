@@ -1,0 +1,736 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "BruTile/5.0.6": {
+        "runtime": {
+          "lib/net6.0/BruTile.dll": {
+            "assemblyVersion": "5.0.6.0",
+            "fileVersion": "5.0.6.0"
+          }
+        }
+      },
+      "ExCSS/4.2.3": {
+        "runtime": {
+          "lib/net7.0/ExCSS.dll": {
+            "assemblyVersion": "4.2.3.0",
+            "fileVersion": "4.2.3.0"
+          }
+        }
+      },
+      "HarfBuzzSharp/7.3.0.3": {
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Win32": "7.3.0.3",
+          "HarfBuzzSharp.NativeAssets.macOS": "7.3.0.3"
+        },
+        "runtime": {
+          "lib/net6.0/HarfBuzzSharp.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "7.3.0.3"
+          }
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.Linux/2.8.2.3": {
+        "dependencies": {
+          "HarfBuzzSharp": "7.3.0.3"
+        },
+        "runtimeTargets": {
+          "runtimes/linux-arm/native/libHarfBuzzSharp.so": {
+            "rid": "linux-arm",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-arm64/native/libHarfBuzzSharp.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-musl-x64/native/libHarfBuzzSharp.so": {
+            "rid": "linux-musl-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x64/native/libHarfBuzzSharp.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.macOS/7.3.0.3": {
+        "runtimeTargets": {
+          "runtimes/osx/native/libHarfBuzzSharp.dylib": {
+            "rid": "osx",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.Win32/7.3.0.3": {
+        "runtimeTargets": {
+          "runtimes/win-arm64/native/libHarfBuzzSharp.dll": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/libHarfBuzzSharp.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/libHarfBuzzSharp.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Mapsui/4.1.9": {
+        "runtime": {
+          "lib/net6.0/Mapsui.dll": {
+            "assemblyVersion": "4.1.9.0",
+            "fileVersion": "4.1.9.0"
+          }
+        }
+      },
+      "Mapsui.ArcGIS/4.1.9": {
+        "dependencies": {
+          "BruTile": "5.0.6",
+          "Mapsui": "4.1.9",
+          "Newtonsoft.Json": "13.0.2"
+        },
+        "runtime": {
+          "lib/net6.0/Mapsui.ArcGIS.dll": {
+            "assemblyVersion": "4.1.9.0",
+            "fileVersion": "4.1.9.0"
+          }
+        }
+      },
+      "Mapsui.Nts/4.1.9": {
+        "dependencies": {
+          "Mapsui": "4.1.9",
+          "NetTopologySuite": "2.6.0",
+          "NetTopologySuite.IO.GeoJSON4STJ": "4.0.0",
+          "System.Memory": "4.5.5"
+        },
+        "runtime": {
+          "lib/net6.0/Mapsui.Nts.dll": {
+            "assemblyVersion": "4.1.9.0",
+            "fileVersion": "4.1.9.0"
+          }
+        }
+      },
+      "Mapsui.Rendering.Skia/4.1.9": {
+        "dependencies": {
+          "HarfBuzzSharp": "7.3.0.3",
+          "Mapsui": "4.1.9",
+          "Mapsui.Nts": "4.1.9",
+          "NetTopologySuite": "2.6.0",
+          "NetTopologySuite.IO.GeoJSON4STJ": "4.0.0",
+          "SkiaSharp": "2.88.9",
+          "SkiaSharp.HarfBuzz": "2.88.9",
+          "SkiaSharp.NativeAssets.Linux": "2.88.9",
+          "Svg.Skia": "1.0.0.3",
+          "System.Memory": "4.5.5",
+          "Topten.RichTextKit": "0.4.166"
+        },
+        "runtime": {
+          "lib/net6.0/Mapsui.Rendering.Skia.dll": {
+            "assemblyVersion": "4.1.9.0",
+            "fileVersion": "4.1.9.0"
+          }
+        }
+      },
+      "Mapsui.Tiling/4.1.9": {
+        "dependencies": {
+          "BruTile": "5.0.6",
+          "Mapsui": "4.1.9"
+        },
+        "runtime": {
+          "lib/net6.0/Mapsui.Tiling.dll": {
+            "assemblyVersion": "4.1.9.0",
+            "fileVersion": "4.1.9.0"
+          }
+        }
+      },
+      "Mapsui.Wpf/4.1.9": {
+        "dependencies": {
+          "BruTile": "5.0.6",
+          "HarfBuzzSharp": "7.3.0.3",
+          "Mapsui": "4.1.9",
+          "Mapsui.Rendering.Skia": "4.1.9",
+          "Mapsui.Tiling": "4.1.9",
+          "NetTopologySuite": "2.6.0",
+          "NetTopologySuite.IO.GeoJSON4STJ": "4.0.0",
+          "SkiaSharp": "2.88.9",
+          "SkiaSharp.HarfBuzz": "2.88.9",
+          "SkiaSharp.NativeAssets.Linux": "2.88.9",
+          "SkiaSharp.Views.WPF": "2.88.9",
+          "Svg.Skia": "1.0.0.3",
+          "System.Drawing.Common": "8.0.2",
+          "System.Memory": "4.5.5",
+          "System.Text.Encoding.CodePages": "8.0.0",
+          "Topten.RichTextKit": "0.4.166"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Mapsui.UI.Wpf.dll": {
+            "assemblyVersion": "4.1.9.0",
+            "fileVersion": "4.1.9.0"
+          }
+        }
+      },
+      "Microsoft.Win32.SystemEvents/8.0.0": {
+        "runtime": {
+          "lib/net8.0/Microsoft.Win32.SystemEvents.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net8.0/Microsoft.Win32.SystemEvents.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "NetTopologySuite/2.6.0": {
+        "runtime": {
+          "lib/netstandard2.1/NetTopologySuite.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.0"
+          }
+        }
+      },
+      "NetTopologySuite.Features/2.2.0": {
+        "dependencies": {
+          "NetTopologySuite": "2.6.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/NetTopologySuite.Features.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.0"
+          }
+        }
+      },
+      "NetTopologySuite.IO.Esri.Shapefile/1.2.0": {
+        "dependencies": {
+          "NetTopologySuite": "2.6.0",
+          "NetTopologySuite.Features": "2.2.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/NetTopologySuite.IO.Esri.Shapefile.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NetTopologySuite.IO.GeoJSON4STJ/4.0.0": {
+        "dependencies": {
+          "NetTopologySuite": "2.6.0",
+          "NetTopologySuite.Features": "2.2.0",
+          "System.Text.Json": "9.0.6"
+        },
+        "runtime": {
+          "lib/netstandard2.0/NetTopologySuite.IO.GeoJSON4STJ.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
+        }
+      },
+      "Newtonsoft.Json/13.0.2": {
+        "runtime": {
+          "lib/net6.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.0.2.27524"
+          }
+        }
+      },
+      "ShimSkiaSharp/1.0.0.3": {
+        "runtime": {
+          "lib/net6.0/ShimSkiaSharp.dll": {
+            "assemblyVersion": "1.0.0.3",
+            "fileVersion": "1.0.0.3"
+          }
+        }
+      },
+      "SkiaSharp/2.88.9": {
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "2.88.9",
+          "SkiaSharp.NativeAssets.macOS": "2.88.9"
+        },
+        "runtime": {
+          "lib/net6.0/SkiaSharp.dll": {
+            "assemblyVersion": "2.88.0.0",
+            "fileVersion": "2.88.9.0"
+          }
+        }
+      },
+      "SkiaSharp.HarfBuzz/2.88.9": {
+        "dependencies": {
+          "HarfBuzzSharp": "7.3.0.3",
+          "SkiaSharp": "2.88.9"
+        },
+        "runtime": {
+          "lib/net6.0/SkiaSharp.HarfBuzz.dll": {
+            "assemblyVersion": "2.88.0.0",
+            "fileVersion": "2.88.9.0"
+          }
+        }
+      },
+      "SkiaSharp.NativeAssets.Linux/2.88.9": {
+        "dependencies": {
+          "SkiaSharp": "2.88.9"
+        },
+        "runtimeTargets": {
+          "runtimes/linux-arm/native/libSkiaSharp.so": {
+            "rid": "linux-arm",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-arm64/native/libSkiaSharp.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-musl-x64/native/libSkiaSharp.so": {
+            "rid": "linux-musl-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x64/native/libSkiaSharp.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "SkiaSharp.NativeAssets.macOS/2.88.9": {
+        "runtimeTargets": {
+          "runtimes/osx/native/libSkiaSharp.dylib": {
+            "rid": "osx",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "SkiaSharp.NativeAssets.Win32/2.88.9": {
+        "runtimeTargets": {
+          "runtimes/win-arm64/native/libSkiaSharp.dll": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/libSkiaSharp.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/libSkiaSharp.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "SkiaSharp.Views.Desktop.Common/2.88.9": {
+        "dependencies": {
+          "SkiaSharp": "2.88.9",
+          "System.Drawing.Common": "8.0.2"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/SkiaSharp.Views.Desktop.Common.dll": {
+            "assemblyVersion": "2.88.0.0",
+            "fileVersion": "2.88.9.0"
+          }
+        }
+      },
+      "SkiaSharp.Views.WPF/2.88.9": {
+        "dependencies": {
+          "SkiaSharp": "2.88.9",
+          "SkiaSharp.Views.Desktop.Common": "2.88.9"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/SkiaSharp.Views.WPF.dll": {
+            "assemblyVersion": "2.88.0.0",
+            "fileVersion": "2.88.9.0"
+          }
+        }
+      },
+      "Svg.Custom/1.0.0.3": {
+        "dependencies": {
+          "ExCSS": "4.2.3"
+        },
+        "runtime": {
+          "lib/net6.0/Svg.Custom.dll": {
+            "assemblyVersion": "1.0.0.3",
+            "fileVersion": "1.0.0.3"
+          }
+        }
+      },
+      "Svg.Model/1.0.0.3": {
+        "dependencies": {
+          "ShimSkiaSharp": "1.0.0.3",
+          "Svg.Custom": "1.0.0.3"
+        },
+        "runtime": {
+          "lib/net6.0/Svg.Model.dll": {
+            "assemblyVersion": "1.0.0.3",
+            "fileVersion": "1.0.0.3"
+          }
+        }
+      },
+      "Svg.Skia/1.0.0.3": {
+        "dependencies": {
+          "SkiaSharp": "2.88.9",
+          "SkiaSharp.HarfBuzz": "2.88.9",
+          "Svg.Custom": "1.0.0.3",
+          "Svg.Model": "1.0.0.3"
+        },
+        "runtime": {
+          "lib/net6.0/Svg.Skia.dll": {
+            "assemblyVersion": "1.0.0.3",
+            "fileVersion": "1.0.0.3"
+          }
+        }
+      },
+      "System.Drawing.Common/8.0.2": {
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "8.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/System.Drawing.Common.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.224.6803"
+          }
+        }
+      },
+      "System.IO.Pipelines/9.0.6": {
+        "runtime": {
+          "lib/net8.0/System.IO.Pipelines.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.625.26613"
+          }
+        }
+      },
+      "System.Memory/4.5.5": {},
+      "System.Text.Encoding.CodePages/8.0.0": {
+        "runtime": {
+          "lib/net8.0/System.Text.Encoding.CodePages.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net8.0/System.Text.Encoding.CodePages.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "System.Text.Encodings.Web/9.0.6": {
+        "runtime": {
+          "lib/net8.0/System.Text.Encodings.Web.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.625.26613"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/browser/lib/net8.0/System.Text.Encodings.Web.dll": {
+            "rid": "browser",
+            "assetType": "runtime",
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.625.26613"
+          }
+        }
+      },
+      "System.Text.Json/9.0.6": {
+        "dependencies": {
+          "System.IO.Pipelines": "9.0.6",
+          "System.Text.Encodings.Web": "9.0.6"
+        },
+        "runtime": {
+          "lib/net8.0/System.Text.Json.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.625.26613"
+          }
+        }
+      },
+      "Topten.RichTextKit/0.4.166": {
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Linux": "2.8.2.3",
+          "SkiaSharp": "2.88.9",
+          "SkiaSharp.HarfBuzz": "2.88.9",
+          "SkiaSharp.NativeAssets.Linux": "2.88.9"
+        },
+        "runtime": {
+          "lib/net5.0/Topten.RichTextKit.dll": {
+            "assemblyVersion": "0.4.166.0",
+            "fileVersion": "0.4.166.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "BruTile/5.0.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-JsPmrvFy6rZFH8Q3nHSi+wu8og93hqmnzL+6EhiznHU42yB8LETgeZWPZCfSCUTdMP3JrnwxCQ1UUXYEHhaWww==",
+      "path": "brutile/5.0.6",
+      "hashPath": "brutile.5.0.6.nupkg.sha512"
+    },
+    "ExCSS/4.2.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-SyeAfu2wL5247sipJoPUzQfjiwQtfSd8hN4IbgoyVcDx4PP6Dud4znwPRibWQzLtTlUxYYcbf5f4p+EfFC7KtQ==",
+      "path": "excss/4.2.3",
+      "hashPath": "excss.4.2.3.nupkg.sha512"
+    },
+    "HarfBuzzSharp/7.3.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Hq+5+gx10coOvuRgB13KBwiWxJq1QeYuhtVLbA01ZCWaugOnolUahF44KvrQTUUHDNk/C7HB6SMaebsZeOdhgg==",
+      "path": "harfbuzzsharp/7.3.0.3",
+      "hashPath": "harfbuzzsharp.7.3.0.3.nupkg.sha512"
+    },
+    "HarfBuzzSharp.NativeAssets.Linux/2.8.2.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Qu1yJSHEN7PD3+fqfkaClnORWN5e2xJ2Xoziz/GUi/oBT1Z+Dp2oZeiONKP6NFltboSOBkvH90QuOA6YN/U1zg==",
+      "path": "harfbuzzsharp.nativeassets.linux/2.8.2.3",
+      "hashPath": "harfbuzzsharp.nativeassets.linux.2.8.2.3.nupkg.sha512"
+    },
+    "HarfBuzzSharp.NativeAssets.macOS/7.3.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-UAwIYnkbBTzBJv1Id8FijY/i8QiIepRemSXufU8fyzwWhYJdx4+ajG8yQUie5HW/uusbVLFSr26muSlJOFDgSw==",
+      "path": "harfbuzzsharp.nativeassets.macos/7.3.0.3",
+      "hashPath": "harfbuzzsharp.nativeassets.macos.7.3.0.3.nupkg.sha512"
+    },
+    "HarfBuzzSharp.NativeAssets.Win32/7.3.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RPxRXD16KtSs8Yxr2RK9Qs7AwyN9MlpqZIYs0AvfaJwl7RAtVhC0+u2f2SKwX0uMYYd3O98Z+OBA1sj6aWVKQA==",
+      "path": "harfbuzzsharp.nativeassets.win32/7.3.0.3",
+      "hashPath": "harfbuzzsharp.nativeassets.win32.7.3.0.3.nupkg.sha512"
+    },
+    "Mapsui/4.1.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-C+PueUr1PtjGtJ7JdHiZVF7lRfebr6jD1EhS1W0eq7rISFj51U5PGhflEeaocv1N3gJb7iqldrAbmX8GpY4+6A==",
+      "path": "mapsui/4.1.9",
+      "hashPath": "mapsui.4.1.9.nupkg.sha512"
+    },
+    "Mapsui.ArcGIS/4.1.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-lq85ni+BMymK+jrkxhDfte4weNsK6D6nJow2kq0SGUfomeTUzP5C7b23eHgFC7RG2y3jev5ThHemxe6gLDi3Bg==",
+      "path": "mapsui.arcgis/4.1.9",
+      "hashPath": "mapsui.arcgis.4.1.9.nupkg.sha512"
+    },
+    "Mapsui.Nts/4.1.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-bnNKg/cIafxj1VenxjBiX3QWUradfisqvg88CQbO+X06y4GM1NsAQtY4Q8AspCC1R2cn1/mLzEJjASnRSAws7g==",
+      "path": "mapsui.nts/4.1.9",
+      "hashPath": "mapsui.nts.4.1.9.nupkg.sha512"
+    },
+    "Mapsui.Rendering.Skia/4.1.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XG+m+NR5pjyx/sZnqNFwVKVY/+aPOdk+i4Z3O/mttkkzulFAxOO1mX53/0L0bAAHh5DcemXUD8xhgPNV75NuQg==",
+      "path": "mapsui.rendering.skia/4.1.9",
+      "hashPath": "mapsui.rendering.skia.4.1.9.nupkg.sha512"
+    },
+    "Mapsui.Tiling/4.1.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-k3D3ERv7/S3vMRYpfviqzFtV98/aCae5bNdjwEKZne9eK1GXPZhp5c9wy29iXb6+DZyDAI1SRvEodIH2R2+bug==",
+      "path": "mapsui.tiling/4.1.9",
+      "hashPath": "mapsui.tiling.4.1.9.nupkg.sha512"
+    },
+    "Mapsui.Wpf/4.1.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-CypHY6Y0mwwKcMrgqmk2L7lEo8WKBISeeQ0zD/UzwXo7NAEHtiIX29TpYpx5SQMDDEnbYXPVy5HH2w0v/9Ep4g==",
+      "path": "mapsui.wpf/4.1.9",
+      "hashPath": "mapsui.wpf.4.1.9.nupkg.sha512"
+    },
+    "Microsoft.Win32.SystemEvents/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9opKRyOKMCi2xJ7Bj7kxtZ1r9vbzosMvRrdEhVhDz8j8MoBGgB+WmC94yH839NPH+BclAjtQ/pyagvi/8gDLkw==",
+      "path": "microsoft.win32.systemevents/8.0.0",
+      "hashPath": "microsoft.win32.systemevents.8.0.0.nupkg.sha512"
+    },
+    "NetTopologySuite/2.6.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1B1OTacTd4QtFyBeuIOcThwSSLUdRZU3bSFIwM8vk36XiZlBMi3K36u74e4OqwwHRHUuJC1PhbDx4hyI266X1Q==",
+      "path": "nettopologysuite/2.6.0",
+      "hashPath": "nettopologysuite.2.6.0.nupkg.sha512"
+    },
+    "NetTopologySuite.Features/2.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Uk0Sun2RtpDLMcPhPO8UFZYDtESpZmHSfqa/eskJkdOjmK2rVbo2Zm3YiT3zdtjgosypgDT/eQLiFbsPKMOgbg==",
+      "path": "nettopologysuite.features/2.2.0",
+      "hashPath": "nettopologysuite.features.2.2.0.nupkg.sha512"
+    },
+    "NetTopologySuite.IO.Esri.Shapefile/1.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/1EF4aFVgUo2ZRZfeek2VM/+YxHoHAw3tKEyqioJ6ZN9QDuWvdZ/UTYd+J9lxNf1yKVTQzv0If7ttaLYJziIGA==",
+      "path": "nettopologysuite.io.esri.shapefile/1.2.0",
+      "hashPath": "nettopologysuite.io.esri.shapefile.1.2.0.nupkg.sha512"
+    },
+    "NetTopologySuite.IO.GeoJSON4STJ/4.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Jdm9qBVDcHkrVn3fm3knw6pGu3Ggn31tGVRyIP1/5HSL+8EDPfUnEZF0+oVFBkOKR9tqu9aV2jmEX42Kq8F2Yw==",
+      "path": "nettopologysuite.io.geojson4stj/4.0.0",
+      "hashPath": "nettopologysuite.io.geojson4stj.4.0.0.nupkg.sha512"
+    },
+    "Newtonsoft.Json/13.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-R2pZ3B0UjeyHShm9vG+Tu0EBb2lC8b0dFzV9gVn50ofHXh9Smjk6kTn7A/FdAsC8B5cKib1OnGYOXxRBz5XQDg==",
+      "path": "newtonsoft.json/13.0.2",
+      "hashPath": "newtonsoft.json.13.0.2.nupkg.sha512"
+    },
+    "ShimSkiaSharp/1.0.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xIvruo8cU+APpa2v4cYYuWt8vml2oI8cxilJrozisgNniPn9ZSugluI93ld+R+R0SDLHvwakVgk9rH+os+2uCw==",
+      "path": "shimskiasharp/1.0.0.3",
+      "hashPath": "shimskiasharp.1.0.0.3.nupkg.sha512"
+    },
+    "SkiaSharp/2.88.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3MD5VHjXXieSHCleRLuaTXmL2pD0mB7CcOB1x2kA1I4bhptf4e3R27iM93264ZYuAq6mkUyX5XbcxnZvMJYc1Q==",
+      "path": "skiasharp/2.88.9",
+      "hashPath": "skiasharp.2.88.9.nupkg.sha512"
+    },
+    "SkiaSharp.HarfBuzz/2.88.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5lyjX04CSWTKFYMSNN6SMupV2qzYDr8W/u8S3ZEkr+Sg3kOi0YE06EOqG0tzn/YPBID89xam4L3rz3hUUKOGEQ==",
+      "path": "skiasharp.harfbuzz/2.88.9",
+      "hashPath": "skiasharp.harfbuzz.2.88.9.nupkg.sha512"
+    },
+    "SkiaSharp.NativeAssets.Linux/2.88.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cWSaJKVPWAaT/WIn9c8T5uT/l4ETwHxNJTkEOtNKjphNo8AW6TF9O32aRkxqw3l8GUdUo66Bu7EiqtFh/XG0Zg==",
+      "path": "skiasharp.nativeassets.linux/2.88.9",
+      "hashPath": "skiasharp.nativeassets.linux.2.88.9.nupkg.sha512"
+    },
+    "SkiaSharp.NativeAssets.macOS/2.88.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Nv5spmKc4505Ep7oUoJ5vp3KweFpeNqxpyGDWyeEPTX2uR6S6syXIm3gj75dM0YJz7NPvcix48mR5laqs8dPuA==",
+      "path": "skiasharp.nativeassets.macos/2.88.9",
+      "hashPath": "skiasharp.nativeassets.macos.2.88.9.nupkg.sha512"
+    },
+    "SkiaSharp.NativeAssets.Win32/2.88.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wb2kYgU7iy84nQLYZwMeJXixvK++GoIuECjU4ECaUKNuflyRlJKyiRhN1MAHswvlvzuvkrjRWlK0Za6+kYQK7w==",
+      "path": "skiasharp.nativeassets.win32/2.88.9",
+      "hashPath": "skiasharp.nativeassets.win32.2.88.9.nupkg.sha512"
+    },
+    "SkiaSharp.Views.Desktop.Common/2.88.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-a9geU/Xe5Tn6OnadnfnMCUqqO3vB7GwCxJM8f7rRay8JrGXm7rgYKBPQX0baymxmVlPqYXeMm8AWhQj5RVtwPw==",
+      "path": "skiasharp.views.desktop.common/2.88.9",
+      "hashPath": "skiasharp.views.desktop.common.2.88.9.nupkg.sha512"
+    },
+    "SkiaSharp.Views.WPF/2.88.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-80fEK0dYEJpi36Ko9WylN2rCf4w/hzzHEe+nyEL79dTHvUVfuXLZONmIwrDJ+pL5JSi8YmktQVxbYZexS+NZCw==",
+      "path": "skiasharp.views.wpf/2.88.9",
+      "hashPath": "skiasharp.views.wpf.2.88.9.nupkg.sha512"
+    },
+    "Svg.Custom/1.0.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-QjbtwFhnv7cxf3GkRBMe9fjwJ8NmD/q+f2UdNQa5lO6MypYxi9p93gb58koTaQvUvVzO6/tM7Zx/KFwnD6Fblg==",
+      "path": "svg.custom/1.0.0.3",
+      "hashPath": "svg.custom.1.0.0.3.nupkg.sha512"
+    },
+    "Svg.Model/1.0.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-JumLfSlV4bg5d+RO4zxW7yGx6eCqqJtAZ3VJHJA3QlH/lJvBc3kSQrNv/p9TF7atl56CR4wD14+DQ591Rnh6sg==",
+      "path": "svg.model/1.0.0.3",
+      "hashPath": "svg.model.1.0.0.3.nupkg.sha512"
+    },
+    "Svg.Skia/1.0.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-W786IMogol+VImiN6KgANvrZAprQ2Cb5UcaUFgCzwc4OXRxq/fviy1SyIU/X7svNmcWAq+ijzBKkgBQMVFtAhQ==",
+      "path": "svg.skia/1.0.0.3",
+      "hashPath": "svg.skia.1.0.0.3.nupkg.sha512"
+    },
+    "System.Drawing.Common/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-oDedGrYVyzvtGZhgtURpeneHq9D3HQtrvU7q6iCRa+BbIXvTZayGFo0iK3b7qHrwQ/OOAn9B0ghzQH6AbW5LHg==",
+      "path": "system.drawing.common/8.0.2",
+      "hashPath": "system.drawing.common.8.0.2.nupkg.sha512"
+    },
+    "System.IO.Pipelines/9.0.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-0nlr0reXrRmkZNKifKqh2DgGhQgfkT7Qa3gQxIn/JI7/y3WDiTz67M+Sq3vFhUqcG8O5zVrpqHvIHeGPGUBsEw==",
+      "path": "system.io.pipelines/9.0.6",
+      "hashPath": "system.io.pipelines.9.0.6.nupkg.sha512"
+    },
+    "System.Memory/4.5.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XIWiDvKPXaTveaB7HVganDlOCRoj03l+jrwNvcge/t8vhGYKvqV+dMv6G4SAX2NoNmN0wZfVPTAlFwZcZvVOUw==",
+      "path": "system.memory/4.5.5",
+      "hashPath": "system.memory.4.5.5.nupkg.sha512"
+    },
+    "System.Text.Encoding.CodePages/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-OZIsVplFGaVY90G2SbpgU7EnCoOO5pw1t4ic21dBF3/1omrJFpAGoNAVpPyMVOC90/hvgkGG3VFqR13YgZMQfg==",
+      "path": "system.text.encoding.codepages/8.0.0",
+      "hashPath": "system.text.encoding.codepages.8.0.0.nupkg.sha512"
+    },
+    "System.Text.Encodings.Web/9.0.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uWRgViw2yJAUyGxrzDLCc6fkzE2dZIoXxs8V6YjCujKsJuP0pnpYSlbm2/7tKd0SjBnMtwfDQhLenk3bXonVOA==",
+      "path": "system.text.encodings.web/9.0.6",
+      "hashPath": "system.text.encodings.web.9.0.6.nupkg.sha512"
+    },
+    "System.Text.Json/9.0.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-h+ZtYTyTnTh5Ju6mHCKb3FPGx4ylJZgm9W7Y2psUnkhQRPMOIxX+TCN0ZgaR/+Yea+93XHWAaMzYTar1/EHIPg==",
+      "path": "system.text.json/9.0.6",
+      "hashPath": "system.text.json.9.0.6.nupkg.sha512"
+    },
+    "Topten.RichTextKit/0.4.166": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-QJiqzi31Cd/QrinlAKvqiqIe0GOLijCcBCnLDHYXpOsJ5CmV4VtbUNAZ4a5VErhlInwX4gkMVsfb1ZRR8o1fdA==",
+      "path": "topten.richtextkit/0.4.166",
+      "hashPath": "topten.richtextkit.0.4.166.nupkg.sha512"
+    }
+  }
+}

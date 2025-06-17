@@ -1,0 +1,43 @@
+﻿<Application x:Class="WPFMapSUi.App"  
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"  
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  
+             xmlns:local="clr-namespace:WPFMapSUi"  
+             StartupUri="MainWindow.xaml">  
+    <Application.Resources>  
+        <Style x:Key="DataGridTextBlockStyle" TargetType="TextBlock">  
+            <Setter Property="Padding" Value="5"/>  
+            <Setter Property="TextWrapping" Value="Wrap"/>  
+        </Style>
+
+        <Style x:Key="DataGridTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+        
+        
+        <Style TargetType="Button" x:Key="ClearSelectionButtonStyle">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#FF555555"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="0"
+                        CornerRadius="12">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="Background" Value="#20FF0000"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Application.Resources>  
+</Application>
