@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Mapsui;
+using Mapsui.Nts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using Mapsui;
-using Mapsui.Nts;
 
 namespace WPFMapSUi
 {
@@ -27,10 +28,11 @@ namespace WPFMapSUi
 
             // Get all unique fields from all selected features
             var allFields = SelectedFeatures
-                .SelectMany(f => f.Fields)
-                .Distinct()
-                .OrderBy(f => f)
-                .ToList();
+            .SelectMany(f => f.Fields)
+            .Distinct()
+            .OrderBy(f => f)
+            .Select(f => FixEncoding(f)) // Add encoding fix here
+            .ToList();
 
             var attributes = new List<BatchEditAttribute>();
 
@@ -59,6 +61,14 @@ namespace WPFMapSUi
             selectedCountText.Text = $"{SelectedFeaturesCount} elementos seleccionados";
         }
 
+        private string FixEncoding(string input)
+        {
+            // Convert from incorrect encoding (likely UTF-8 misinterpreted as ISO-8859-1)
+            byte[] bytes = Encoding.GetEncoding(1252).GetBytes(input);
+            return Encoding.UTF8.GetString(bytes);
+        }
+
+        #region Buttons
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
@@ -102,5 +112,6 @@ namespace WPFMapSUi
             Close();
         }
     }
+    #endregion
 }
 

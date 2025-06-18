@@ -191,9 +191,8 @@ namespace WPFMapSUi
                 {
                     var position = e.GetPosition(MapControl);
                     var worldEndPoint = MapControl.Map.Navigator.Viewport.ScreenToWorld(position.X, position.Y);
-
                     
-                        SelectFeaturesInBox(_dragStartPoint, worldEndPoint);
+                    SelectFeaturesInBox(_dragStartPoint, worldEndPoint);
 
                     // Remove selection box layer
                     var selectionLayer = MapControl.Map.Layers.FirstOrDefault(l => l.Name == "SelectionBox");
@@ -559,7 +558,8 @@ namespace WPFMapSUi
 
             var shapeProvider = new ShapeFile(shapefilePath, true)
             {
-                CRS = "EPSG:3857" 
+                CRS = "EPSG:3857",
+                Encoding = Encoding.GetEncoding(1252)
             };
 
             // Create layer with proper interactive settings
@@ -694,7 +694,10 @@ namespace WPFMapSUi
                             MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
-                    var options = new ShapefileWriterOptions(ShapeType.Polygon, dbfFields.ToArray());
+                    var options = new ShapefileWriterOptions(ShapeType.Polygon, dbfFields.ToArray())
+                    {
+                        Encoding = Encoding.GetEncoding(1252) // Specify encoding for output
+                    };
                     using var writer = Shapefile.OpenWrite(Path.ChangeExtension(saveDialog.FileName, null), options);
 
                     var features = await shapefile.GetFeaturesAsync(fetchInfo);
@@ -768,9 +771,20 @@ namespace WPFMapSUi
         }
         private string CleanFieldName(string originalName)
         {
-            var cleaned = Regex.Replace(originalName, "[^a-zA-Z0-9_]", "_");
+            // First fix encoding
+            string fixedName = FixEncoding(originalName);
+
+            // Then clean as before
+            var cleaned = Regex.Replace(fixedName, "[^a-zA-Z0-9_áéíóúÁÉÍÓÚñÑ]", "_");
             if (char.IsDigit(cleaned[0])) cleaned = "F_" + cleaned;
             return cleaned.Length > 10 ? cleaned.Substring(0, 10) : cleaned;
+        }
+
+        private string FixEncoding(string input)
+        {
+            // Convert from incorrect encoding (likely UTF-8 misinterpreted as ISO-8859-1)
+            byte[] bytes = Encoding.GetEncoding(1252).GetBytes(input);
+            return Encoding.UTF8.GetString(bytes);
         }
 
         private void menuScreenshot_Click(object sender, RoutedEventArgs e)
@@ -844,7 +858,6 @@ namespace WPFMapSUi
             MapControl.Map.Layers.Clear();
             menuSaveAs.IsEnabled = false;
             limpiarMapa.IsEnabled = false;
-            _selectionState.Features.Clear();
             ClearAllSelections();
             UpdateAttributeGrid();
             MapControl.Map.Refresh();
