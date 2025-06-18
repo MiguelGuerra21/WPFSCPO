@@ -13,6 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotSpatial.Data" Version="4.0.656" />
+    <PackageReference Include="DotSpatial.Projections" Version="4.0.656" />
+    <PackageReference Include="DotSpatial.Serialization" Version="4.0.656" />
     <PackageReference Include="Mapsui" Version="4.1.9" />
     <PackageReference Include="Mapsui.ArcGIS" Version="4.1.9" />
     <PackageReference Include="Mapsui.Nts" Version="4.1.9" />

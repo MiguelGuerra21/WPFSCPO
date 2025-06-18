@@ -138,3 +138,10 @@ C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\obj\Debug\net8.0-windows\refint\WPF
 C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\obj\Debug\net8.0-windows\WPFMapSUi.pdb
 C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\obj\Debug\net8.0-windows\WPFMapSUi.genruntimeconfig.cache
 C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\obj\Debug\net8.0-windows\ref\WPFMapSUi.dll
+C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\bin\Debug\net8.0-windows\DotSpatial.Data.dll
+C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\bin\Debug\net8.0-windows\DotSpatial.NTSExtension.dll
+C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\bin\Debug\net8.0-windows\DotSpatial.Projections.dll
+C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\bin\Debug\net8.0-windows\DotSpatial.Serialization.dll
+C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\bin\Debug\net8.0-windows\System.ComponentModel.Composition.dll
+C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\bin\Debug\net8.0-windows\System.Data.OleDb.dll
+C:\Users\mrg8\source\repos\WPFSCPO\WPFMapSUi\bin\Debug\net8.0-windows\runtimes\win\lib\net6.0\System.Data.OleDb.dll

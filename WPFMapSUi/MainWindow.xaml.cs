@@ -1,4 +1,5 @@
-﻿using Mapsui;
+﻿using DotSpatial.Data;
+using Mapsui;
 using Mapsui.Animations;
 using Mapsui.Extensions;
 using Mapsui.Layers;
@@ -22,7 +23,9 @@ using NetTopologySuite.IO.Esri.Shapefiles.Readers;
 using NetTopologySuite.IO.Esri.Shapefiles.Writers;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -88,8 +91,13 @@ namespace WPFMapSUi
             if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
             {
                 _isControlPressed = true;
-                MapControl.Cursor = Cursors.Cross;
-                e.Handled = true; // Prevent other controls from handling this
+                MapControl.Cursor = _isMouseDown ? Cursors.Cross : Cursors.Arrow;
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Escape)  
+            {
+                ClearAllSelections();
+                e.Handled = true;
             }
         }
 
@@ -98,8 +106,8 @@ namespace WPFMapSUi
             if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
             {
                 _isControlPressed = false;
-                MapControl.Cursor = Cursors.Arrow;
-                e.Handled = true; // Prevent other controls from handling this
+                MapControl.Cursor = _isMouseDown ? Cursors.SizeAll : Cursors.Arrow;
+                e.Handled = true;
             }
         }
 
@@ -253,40 +261,6 @@ namespace WPFMapSUi
 
             Debug.WriteLine($"Total features selected: {_selectionState.Features.Count}");
             UpdateFeatureStyles();
-        }
-
-
-        private void SelectSingleFeature2(MPoint screenPosition)
-        {
-            Debug.WriteLine($"Selection at: {screenPosition}");
-
-            // Get map info with tolerance
-            int toleranceInPixels = 10;
-            var mapInfo = MapControl.GetMapInfo(screenPosition, toleranceInPixels);
-
-            if (mapInfo?.Feature == null)
-            {
-                Debug.WriteLine("No feature found at click position");
-                return;
-            }
-
-            // Check if feature is already selected
-            var existingFeature = _selectionState.Features.FirstOrDefault(f =>
-                FeaturesAreEqual(f, mapInfo.Feature));
-
-            if (existingFeature != null)
-            {
-                _selectionState.Features.Remove(existingFeature);
-                Debug.WriteLine("Feature deselected");
-            }
-            else
-            {
-                _selectionState.Features.Add(mapInfo.Feature);
-                Debug.WriteLine("Feature selected");
-            }
-
-            UpdateFeatureStyles();
-            Debug.WriteLine($"Total selected: {_selectionState.Features.Count}");
         }
         private void UpdateFeatureStyles()
         {
@@ -498,6 +472,7 @@ namespace WPFMapSUi
         private void ClearAllSelections()
         {
             _selectionState.Features.Clear();
+            _isControlPressed = false; 
 
             // Elimina la caja de selección si existe
             var selectionBoxLayer = MapControl.Map.Layers.FirstOrDefault(l => l.Name == "SelectionBox");
@@ -517,8 +492,9 @@ namespace WPFMapSUi
             // Hide the clear button
             btnClearSelection.Visibility = Visibility.Collapsed;
 
-            UpdateFeatureStyles();
+            MapControl.RefreshGraphics();
             MapControl.Refresh();
+            MapControl.Focus(); 
         }
         #endregion
 
@@ -686,7 +662,7 @@ namespace WPFMapSUi
                     }
 
                     // Create DBF fields based on the sample feature
-                    var dbfFields = CreateDbfFieldsFromSampleFeature(sampleFeature).ToList(); // Convert to List to use FindIndex
+                    var dbfFields = CreateDbfFieldsFromSampleFeature2(sampleFeature).ToList(); // Convert to List to use FindIndex
                     if (dbfFields.Count == 0)
                     {
                         progressDialog.Close();
@@ -696,13 +672,25 @@ namespace WPFMapSUi
                     }
                     var options = new ShapefileWriterOptions(ShapeType.Polygon, dbfFields.ToArray())
                     {
-                        Encoding = Encoding.GetEncoding(1252) // Specify encoding for output
+                        Encoding = Encoding.GetEncoding(shapefile.Encoding.ToString())
                     };
-                    using var writer = Shapefile.OpenWrite(Path.ChangeExtension(saveDialog.FileName, null), options);
+                    using var writer = NetTopologySuite.IO.Esri.Shapefile.OpenWrite(Path.ChangeExtension(saveDialog.FileName, null), options);
 
                     var features = await shapefile.GetFeaturesAsync(fetchInfo);
                     var totalFeatures = features.Count();
                     var processedFeatures = 0;
+                    if (!string.IsNullOrEmpty(shapefile.Encoding.ToString()))
+                    {
+                        string prjPath = Path.ChangeExtension(saveDialog.FileName, ".prj");
+                        File.WriteAllText(prjPath, shapefile.Encoding.ToString());
+                        MessageBox.Show($"El shapefile se guardará junto a su proyección(.prj)", "Éxito",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"El shapefile se guardará sin proyección(.prj)", "Éxito",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
 
                     foreach (var mapFeature in features.Cast<GeometryFeature>())
                     {
@@ -737,7 +725,6 @@ namespace WPFMapSUi
                             }
                         }
                         writer.Write();
-
                         processedFeatures++;
                         progressDialog.UpdateProgress((double)processedFeatures / totalFeatures * 100);
                     }
@@ -762,13 +749,6 @@ namespace WPFMapSUi
 
         #region Helper Methods
 
-        private void EnsureMapControlFocus()
-        {
-            if (!MapControl.IsFocused)
-            {
-                MapControl.Focus();
-            }
-        }
         private string CleanFieldName(string originalName)
         {
             // First fix encoding
@@ -862,9 +842,63 @@ namespace WPFMapSUi
             UpdateAttributeGrid();
             MapControl.Map.Refresh();
         }
+
+        private IEnumerable<DbfField> CreateDbfFieldsFromSampleFeature2(IFeature sampleFeature)
+        {
+            var dbfFields = new List<DbfField>();
+            var culture = CultureInfo.GetCultureInfo("es-ES"); // Spanish culture for comma decimals
+
+            foreach (var field in sampleFeature.Fields)
+            {
+                var value = sampleFeature[field];
+                var cleanFieldName = CleanFieldName(field);
+
+                switch (value)
+                {
+                    case DateTime:
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(DateTime)));
+                        break;
+
+                    case int:
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(int)));
+                        break;
+
+                    case short:
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(short)));
+                        break;
+
+                    case long:
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(long)));
+                        break;
+
+                    case float:
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(float)));
+                        break;
+
+                    case double:
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(double)));
+                        break;
+
+                    case decimal:
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(decimal)));
+                        break;
+
+                    case string str when double.TryParse(str, NumberStyles.Any, culture, out _):
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(double)));
+                        break;
+
+                    default:
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(string)));
+                        break;
+                }
+            }
+
+            return dbfFields;
+        }
         private IEnumerable<DbfField> CreateDbfFieldsFromSampleFeature(IFeature sampleFeature)
         {
             var dbfFields = new List<DbfField>();
+            var culture = CultureInfo.GetCultureInfo("es-ES");
 
             foreach (var field in sampleFeature.Fields)
             {
@@ -876,17 +910,45 @@ namespace WPFMapSUi
                 {
                     dbfFields.Add(DbfField.Create(cleanFieldName, typeof(DateTime)));
                 }
-                else if (value is int || value is short || value is long)
+                else if (value is int)
                 {
                     dbfFields.Add(DbfField.Create(cleanFieldName, typeof(int)));
                 }
-                else if (value is double || value is float || value is decimal)
+                else if (value is short )
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(short)));
+                }
+                else if (value is long)
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(long)));
+                }
+                else if (value is double)
                 {
                     dbfFields.Add(DbfField.Create(cleanFieldName, typeof(double)));
                 }
+                else if (value is float)
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(float)));
+                }
+                else if (value is decimal)
+                {
+                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(decimal)));
+                }
+                else if (value is string strValue)
+                {
+                    if (double.TryParse(strValue, NumberStyles.Any, culture, out double dblValue))
+                    {
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(double))); // Fix: Use cleanFieldName instead of dblValue
+                    }
+                    else
+                    {
+                        dbfFields.Add(DbfField.Create(cleanFieldName, typeof(string))); // Fix: Use cleanFieldName instead of strValue
+                    }
+                }
                 else
                 {
-                    dbfFields.Add(DbfField.Create(cleanFieldName, typeof(string)));
+                    MessageBox.Show("Un atributo tiene un tipo no registrado", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
 

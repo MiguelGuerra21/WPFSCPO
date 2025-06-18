@@ -14,6 +14,50 @@
           }
         }
       },
+      "DotSpatial.Data/4.0.656": {
+        "dependencies": {
+          "DotSpatial.NTSExtension": "4.0.656",
+          "DotSpatial.Projections": "4.0.656",
+          "DotSpatial.Serialization": "4.0.656",
+          "NetTopologySuite": "2.6.0",
+          "System.ComponentModel.Composition": "6.0.0",
+          "System.Data.OleDb": "6.0.0",
+          "System.Drawing.Common": "8.0.2"
+        },
+        "runtime": {
+          "lib/net6.0-windows7.0/DotSpatial.Data.dll": {
+            "assemblyVersion": "4.0.656.0",
+            "fileVersion": "4.0.656.0"
+          }
+        }
+      },
+      "DotSpatial.NTSExtension/4.0.656": {
+        "dependencies": {
+          "NetTopologySuite": "2.6.0"
+        },
+        "runtime": {
+          "lib/net6.0/DotSpatial.NTSExtension.dll": {
+            "assemblyVersion": "4.0.656.0",
+            "fileVersion": "4.0.656.0"
+          }
+        }
+      },
+      "DotSpatial.Projections/4.0.656": {
+        "runtime": {
+          "lib/net6.0/DotSpatial.Projections.dll": {
+            "assemblyVersion": "4.0.656.0",
+            "fileVersion": "4.0.656.0"
+          }
+        }
+      },
+      "DotSpatial.Serialization/4.0.656": {
+        "runtime": {
+          "lib/net6.0/DotSpatial.Serialization.dll": {
+            "assemblyVersion": "4.0.656.0",
+            "fileVersion": "4.0.656.0"
+          }
+        }
+      },
       "ExCSS/4.2.3": {
         "runtime": {
           "lib/net7.0/ExCSS.dll": {
@@ -399,6 +443,65 @@
           }
         }
       },
+      "System.ComponentModel.Composition/6.0.0": {
+        "runtime": {
+          "lib/net6.0/System.ComponentModel.Composition.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Configuration.ConfigurationManager/6.0.0": {
+        "dependencies": {
+          "System.Security.Cryptography.ProtectedData": "6.0.0",
+          "System.Security.Permissions": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Configuration.ConfigurationManager.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Data.OleDb/6.0.0": {
+        "dependencies": {
+          "System.Configuration.ConfigurationManager": "6.0.0",
+          "System.Diagnostics.PerformanceCounter": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Data.OleDb.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Data.OleDb.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Diagnostics.PerformanceCounter/6.0.0": {
+        "dependencies": {
+          "System.Configuration.ConfigurationManager": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Diagnostics.PerformanceCounter.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Diagnostics.PerformanceCounter.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
       "System.Drawing.Common/8.0.2": {
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "8.0.0"
@@ -419,6 +522,50 @@
         }
       },
       "System.Memory/4.5.5": {},
+      "System.Security.AccessControl/6.0.0": {
+        "runtime": {
+          "lib/net6.0/System.Security.AccessControl.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Security.AccessControl.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Security.Cryptography.ProtectedData/6.0.0": {
+        "runtime": {
+          "lib/net6.0/System.Security.Cryptography.ProtectedData.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Security.Cryptography.ProtectedData.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Security.Permissions/6.0.0": {
+        "dependencies": {
+          "System.Security.AccessControl": "6.0.0",
+          "System.Windows.Extensions": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Security.Permissions.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
       "System.Text.Encoding.CodePages/8.0.0": {
         "runtime": {
           "lib/net8.0/System.Text.Encoding.CodePages.dll": {
@@ -463,6 +610,25 @@
           }
         }
       },
+      "System.Windows.Extensions/6.0.0": {
+        "dependencies": {
+          "System.Drawing.Common": "8.0.2"
+        },
+        "runtime": {
+          "lib/net6.0/System.Windows.Extensions.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Windows.Extensions.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
       "Topten.RichTextKit/0.4.166": {
         "dependencies": {
           "HarfBuzzSharp.NativeAssets.Linux": "2.8.2.3",
@@ -486,6 +652,34 @@
       "sha512": "sha512-JsPmrvFy6rZFH8Q3nHSi+wu8og93hqmnzL+6EhiznHU42yB8LETgeZWPZCfSCUTdMP3JrnwxCQ1UUXYEHhaWww==",
       "path": "brutile/5.0.6",
       "hashPath": "brutile.5.0.6.nupkg.sha512"
+    },
+    "DotSpatial.Data/4.0.656": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-F/z0YTbEkp7NbCHrmKkJTELIzNyLz+JHNCuU5K1JOBsc9CutIRXeaAg9MrTfkm+/Wg9lZ3wt04qb8MKcAwy9Jw==",
+      "path": "dotspatial.data/4.0.656",
+      "hashPath": "dotspatial.data.4.0.656.nupkg.sha512"
+    },
+    "DotSpatial.NTSExtension/4.0.656": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4Ak9pt0mxMbukyAFcLLCID2X2hhz+nbFU9JD0XkCgMvOxTv8ZeeO9i22eDE2GaavySpFozlHj8whO4lpUeqqkg==",
+      "path": "dotspatial.ntsextension/4.0.656",
+      "hashPath": "dotspatial.ntsextension.4.0.656.nupkg.sha512"
+    },
+    "DotSpatial.Projections/4.0.656": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RpPgQohZFYFMKpdBfd++auuud1aSjxou6zesRInoQlQLXSwHgGQRCbMflMUzTpjW0mNQq3HnHEP7QfqvCK67rg==",
+      "path": "dotspatial.projections/4.0.656",
+      "hashPath": "dotspatial.projections.4.0.656.nupkg.sha512"
+    },
+    "DotSpatial.Serialization/4.0.656": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/VVWb0MAJLrF+GHaFcV4xRMhJp4JHg46RoWnaxjEEXAqnMZcNqmh962hoV62FBauiZZHNIhnDglfD5bKvuWgnw==",
+      "path": "dotspatial.serialization/4.0.656",
+      "hashPath": "dotspatial.serialization.4.0.656.nupkg.sha512"
     },
     "ExCSS/4.2.3": {
       "type": "package",
@@ -683,6 +877,34 @@
       "path": "svg.skia/1.0.0.3",
       "hashPath": "svg.skia.1.0.0.3.nupkg.sha512"
     },
+    "System.ComponentModel.Composition/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-60Qv+F7oxomOjJeTDA5Z4iCyFbQ0B/2Mi5HT+13pxxq0lVnu2ipbWMzFB+RWKr3wWKA8BSncXr9PH/fECwMX5Q==",
+      "path": "system.componentmodel.composition/6.0.0",
+      "hashPath": "system.componentmodel.composition.6.0.0.nupkg.sha512"
+    },
+    "System.Configuration.ConfigurationManager/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7T+m0kDSlIPTHIkPMIu6m6tV6qsMqJpvQWW2jIc2qi7sn40qxFo0q+7mEQAhMPXZHMKnWrnv47ntGlM/ejvw3g==",
+      "path": "system.configuration.configurationmanager/6.0.0",
+      "hashPath": "system.configuration.configurationmanager.6.0.0.nupkg.sha512"
+    },
+    "System.Data.OleDb/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-LQ8PjTIF1LtrrlGiyiTVjAkQtTWKm9GSNnygIlWjhN9y88s7xhy6DUNDDkmQQ9f6ex7mA4k0Tl97lz/CklaiLg==",
+      "path": "system.data.oledb/6.0.0",
+      "hashPath": "system.data.oledb.6.0.0.nupkg.sha512"
+    },
+    "System.Diagnostics.PerformanceCounter/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gbeE5tNp/oB7O8kTTLh3wPPJCxpNOphXPTWVs1BsYuFOYapFijWuh0LYw1qnDo4gwDUYPXOmpTIhvtxisGsYOQ==",
+      "path": "system.diagnostics.performancecounter/6.0.0",
+      "hashPath": "system.diagnostics.performancecounter.6.0.0.nupkg.sha512"
+    },
     "System.Drawing.Common/8.0.2": {
       "type": "package",
       "serviceable": true,
@@ -704,6 +926,27 @@
       "path": "system.memory/4.5.5",
       "hashPath": "system.memory.4.5.5.nupkg.sha512"
     },
+    "System.Security.AccessControl/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-AUADIc0LIEQe7MzC+I0cl0rAT8RrTAKFHl53yHjEUzNVIaUlhFY11vc2ebiVJzVBuOzun6F7FBA+8KAbGTTedQ==",
+      "path": "system.security.accesscontrol/6.0.0",
+      "hashPath": "system.security.accesscontrol.6.0.0.nupkg.sha512"
+    },
+    "System.Security.Cryptography.ProtectedData/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rp1gMNEZpvx9vP0JW0oHLxlf8oSiQgtno77Y4PLUBjSiDYoD77Y8uXHr1Ea5XG4/pIKhqAdxZ8v8OTUtqo9PeQ==",
+      "path": "system.security.cryptography.protecteddata/6.0.0",
+      "hashPath": "system.security.cryptography.protecteddata.6.0.0.nupkg.sha512"
+    },
+    "System.Security.Permissions/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-T/uuc7AklkDoxmcJ7LGkyX1CcSviZuLCa4jg3PekfJ7SU0niF0IVTXwUiNVP9DSpzou2PpxJ+eNY2IfDM90ZCg==",
+      "path": "system.security.permissions/6.0.0",
+      "hashPath": "system.security.permissions.6.0.0.nupkg.sha512"
+    },
     "System.Text.Encoding.CodePages/8.0.0": {
       "type": "package",
       "serviceable": true,
@@ -724,6 +967,13 @@
       "sha512": "sha512-h+ZtYTyTnTh5Ju6mHCKb3FPGx4ylJZgm9W7Y2psUnkhQRPMOIxX+TCN0ZgaR/+Yea+93XHWAaMzYTar1/EHIPg==",
       "path": "system.text.json/9.0.6",
       "hashPath": "system.text.json.9.0.6.nupkg.sha512"
+    },
+    "System.Windows.Extensions/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-IXoJOXIqc39AIe+CIR7koBtRGMiCt/LPM3lI+PELtDIy9XdyeSrwXFdWV9dzJ2Awl0paLWUaknLxFQ5HpHZUog==",
+      "path": "system.windows.extensions/6.0.0",
+      "hashPath": "system.windows.extensions.6.0.0.nupkg.sha512"
     },
     "Topten.RichTextKit/0.4.166": {
       "type": "package",
