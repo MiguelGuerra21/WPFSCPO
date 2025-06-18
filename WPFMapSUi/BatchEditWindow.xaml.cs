@@ -63,7 +63,6 @@ namespace WPFMapSUi
 
         private string FixEncoding(string input)
         {
-            // Convert from incorrect encoding (likely UTF-8 misinterpreted as ISO-8859-1)
             byte[] bytes = Encoding.GetEncoding(1252).GetBytes(input);
             return Encoding.UTF8.GetString(bytes);
         }
